@@ -36,6 +36,17 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: new FloatingActionButton(onPressed: () => debugPrint('Pressed'),
+        backgroundColor: Colors.lightGreen,
+        tooltip: 'Going Up!',
+        child: new Icon(Icons.call_missed),
+      ),
+      // `title` has been deprecated now, instead use `label`
+      bottomNavigationBar: new BottomNavigationBar(items: [
+        new BottomNavigationBarItem(icon: new Icon(Icons.add), label: 'Hey'),
+        new BottomNavigationBarItem(icon: new Icon(Icons.print), label: 'Nope'),
+        new BottomNavigationBarItem(icon: new Icon(Icons.call_missed), label: 'Hello')
+      ], onTap: (int i) => debugPrint('Hey Touched $i'),),
     );
     throw UnimplementedError();
   }
