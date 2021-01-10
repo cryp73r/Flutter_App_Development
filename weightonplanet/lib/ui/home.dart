@@ -6,13 +6,29 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final TextEditingController _weightController = new TextEditingController();
   int radioValue = 0;
+  double _finalResult = 0.0;
+  String _formatedText = '';
 
   void handleRadioValueChanged(int value) {
     setState(() {
       radioValue = value;
 
-      print(radioValue);
+      switch (value) {
+        case 0:
+          _finalResult = calculateWeight(_weightController.text, 0.06);
+          _formatedText = 'Your Weight on Pluto is ${_finalResult.toStringAsFixed(1)}';
+          break;
+        case 1:
+          _finalResult = calculateWeight(_weightController.text, 0.38);
+          _formatedText = 'Your Weight on Mars is ${_finalResult.toStringAsFixed(1)}';
+          break;
+        case 2:
+          _finalResult = calculateWeight(_weightController.text, 0.91);
+          _formatedText = 'Your Weight on Venus is ${_finalResult.toStringAsFixed(1)}';
+          break;
+      }
     });
   }
 
@@ -41,7 +57,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 children: [
                   TextField(
-                    controller: null,
+                    controller: _weightController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: 'Your Weight',
@@ -86,7 +102,7 @@ class _HomeState extends State<Home> {
                   Padding(
                     padding: const EdgeInsets.all(15.6),
                     child: new Text(
-                      'Hello There',
+                      _weightController.text.isEmpty ? 'Please Enter Weight' : _formatedText + 'lbs',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 19.4,
@@ -101,5 +117,15 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  double calculateWeight(String weight, double multiplier) {
+    if (int.parse(weight).toString().isNotEmpty && int.parse(weight) > 0) {
+      return int.parse(weight) * multiplier;
+    }
+    else {
+      print('Wrong!');
+      return int.parse('180') * 0.38;
+    }
   }
 }
