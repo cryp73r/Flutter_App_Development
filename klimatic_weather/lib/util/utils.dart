@@ -1,2 +1,2 @@
-final apiId = 'your api key';
-final defaultCity = 'city';
+final apiId = 'Your Api Key';
+final defaultCity = 'City';
