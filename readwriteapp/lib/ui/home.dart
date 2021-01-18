@@ -11,6 +11,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var _enterDataField = TextEditingController();
+  String data;
+
+  void displayData() async {
+    data = await readData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,18 +32,15 @@ class _HomeState extends State<Home> {
           title: TextField(
             controller: _enterDataField,
             decoration: InputDecoration(
-              labelText: 'Write Something...'
+                labelText: 'Write Something...'
             ),
           ),
           subtitle: FlatButton(
             onPressed: () {
-            //  save data to file
-              if (_enterDataField.text.isNotEmpty) {
-                writeData(_enterDataField.text);
-              }
-              else {
-                writeData('Hello World');
-              }
+              //  save data to file
+              writeData(_enterDataField.text);
+              displayData();
+              print(data);
             },
             child: Column(
               children: [
@@ -51,6 +54,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+}
 
   Future<String> get _localPath async {
     final directory =
@@ -80,4 +84,3 @@ class _HomeState extends State<Home> {
       return 'Nothing Saved Yet';
     }
   }
-}
