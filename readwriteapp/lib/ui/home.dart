@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,9 +13,34 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   var _enterDataField = TextEditingController();
   String data;
+  String _savedData = '';
 
   void displayData() async {
     data = await readData();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadSavedData();
+  }
+
+  _loadSavedData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    setState(() {
+      if (preferences.getString('data').isNotEmpty && preferences.getString('data')!= null) {
+        _savedData = preferences.getString('data');
+      }
+      else {
+        _savedData = 'Empty SP';
+      }
+    });
+  }
+
+  _saveMessage(String message) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString('data', message);
   }
 
   @override
@@ -38,7 +64,7 @@ class _HomeState extends State<Home> {
           subtitle: FlatButton(
             onPressed: () {
               //  save data to file
-              writeData(_enterDataField.text);
+              _saveMessage(_enterDataField.text);
               displayData();
               print(data);
             },
@@ -46,7 +72,20 @@ class _HomeState extends State<Home> {
               children: [
                 Text('Save Data'),
                 Padding(padding: EdgeInsets.all(14.5)),
-                Text('Save data goes here')
+                FutureBuilder(
+                  future: readData(),
+                    builder: (BuildContext context, AsyncSnapshot<String> data) {
+                    if (data.hasData != null) {
+                      return Text(data.data.toString(),
+                      style: TextStyle(
+                        color: Colors.blueAccent
+                      ),);
+                    }
+                    else {
+                      return Text('No data saved');
+                    }
+                    },
+                ),
               ],
             ),
           ),
