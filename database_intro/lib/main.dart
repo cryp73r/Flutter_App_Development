@@ -18,6 +18,7 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         title: Text("Database"),
         centerTitle: true,
+        backgroundColor: Colors.lightGreen,
       ),
     );
   }
