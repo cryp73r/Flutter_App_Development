@@ -15,7 +15,7 @@ class DatabaseHelper {
   final String columnUsername = 'username';
   final String columnPassword = 'password';
 
-  static DatabaseHelper _db;
+  static Database _db;
 
   Future<Database> get db async {
     if (_db!=null) {
@@ -64,5 +64,22 @@ Future<User> getUser(int id) async {
     var result = await dbClient.rawQuery("SELECT * FROM $tableUser WHERE $columnId=$id");
     if (result.length==0) return null;
     return User.fromMap(result.first);
+}
+
+Future<int> deleteUser(int id) async {
+    var dbClient = await db;
+    
+    return await dbClient.delete(tableUser,
+      where: "$columnId = ?", whereArgs: [id]);
+}
+
+Future<int> updateUser(User user) async {
+    var dbClient = await db;
+    return await dbClient.update(tableUser, user.toMap(), where: "$columnId = ?", whereArgs: [user.id]);
+}
+
+Future close() async {
+    var dbClient = await db;
+    return dbClient.close();
 }
 }
