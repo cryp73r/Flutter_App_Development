@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:todo/models/todo_item.dart';
 import 'package:todo/utils/database_client.dart';
 
+import 'date_formatter.dart';
+
 class ToDoScreen extends StatefulWidget {
   @override
   _ToDoScreenState createState() => _ToDoScreenState();
@@ -22,7 +24,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
   void _handleSubmitted(String text) async {
     _textEditingController.clear();
     
-    ToDoItem toDoItem = ToDoItem(text, DateTime.now().toIso8601String());
+    ToDoItem toDoItem = ToDoItem(text, dateFormatted());
     int savedItemId = await db.saveItem(toDoItem);
 
     ToDoItem addedItem = await db.getItem(savedItemId);
@@ -50,11 +52,12 @@ class _ToDoScreenState extends State<ToDoScreen> {
                     color: Colors.white10,
                     child: ListTile(
                       title: _itemList[index],
-                      onLongPress: () => debugPrint(""),
+                      onLongPress: () => _updateItem(_itemList[index], index),
                       trailing: Listener(
                         key: Key(_itemList[index].itemName),
                         child: Icon(Icons.remove_circle, color: Colors.redAccent,),
-                        onPointerDown: (pointerEvent) => debugPrint(""),
+                        onPointerDown: (pointerEvent) =>
+                          _deleteToDo(_itemList[index].id, index),
                       ),
                     ),
                   );
@@ -96,6 +99,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
             onPressed: () {
               _handleSubmitted(_textEditingController.text);
               _textEditingController.clear();
+              Navigator.pop(context);
             },
             child: Text("Save")),
         TextButton(
@@ -113,7 +117,69 @@ class _ToDoScreenState extends State<ToDoScreen> {
     List items = await db.getItems();
     items.forEach((item) {
       ToDoItem toDoItem = ToDoItem.map(item);
-      print("DB Items: ${toDoItem.itemName}");
+      setState(() {
+        _itemList.add(toDoItem);
+      });
+      // print("DB Items: ${toDoItem.itemName}");
+    });
+  }
+
+  _deleteToDo(int id, int index) async {
+    await db.deleteItem(id);
+    setState(() {
+      _itemList.removeAt(index);
+    });
+  }
+
+  _updateItem(ToDoItem item, int index) {
+    var alert = AlertDialog(
+      title: Text("Update Item"),
+      content: Row(
+        children: [
+          Expanded(
+              child: TextField(
+                controller: _textEditingController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: "Item",
+                  hintText: "eg. Buy Stuff",
+                  icon: Icon(Icons.update)
+                ),
+              ))
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () async {
+              ToDoItem newItemUpdated = ToDoItem.fromMap(
+                {"itemName": _textEditingController.text,
+                  "dateCreated": dateFormatted(),
+                  "id": item.id
+                }
+              );
+              _handleSubmittedUpdate(index, item);
+              await db.updateItem(newItemUpdated);
+              setState(() {
+                _readToDoList();
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Update")),
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"))
+      ],
+    );
+    showDialog(
+        context: context,
+        builder: (_) {
+          return alert;
+        });
+  }
+
+  void _handleSubmittedUpdate(int index, ToDoItem item) {
+    setState(() {
+      _itemList.removeWhere((element) => _itemList[index].itemName == item.itemName);
     });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ToDoItem extends StatelessWidget {
   String _itemName;
   String _dateCreated;
@@ -41,21 +42,26 @@ class ToDoItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_itemName,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16.9
-          ),),
-          Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: Text("Created on: $_dateCreated",
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13.5,
-              fontStyle: FontStyle.italic
-            ),),
-          )
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_itemName,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.9
+                ),),
+              Container(
+                margin: const EdgeInsets.only(top: 5.0),
+                child: Text("Created on: $_dateCreated",
+                  style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13.5,
+                      fontStyle: FontStyle.italic
+                  ),),
+              )
+            ],
+          ),
         ],
       ),
     );
