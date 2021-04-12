@@ -1,8 +1,7 @@
+import 'package:firebase_setup/model/board.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-
-final FirebaseDatabase database = FirebaseDatabase.instance;
 
 void main() {
   runApp(MyApp());
@@ -16,22 +15,31 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Community Board'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
+  List<Board> boardMessages = [];
+  Board board;
+  final FirebaseDatabase database = FirebaseDatabase.instance;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  DatabaseReference databaseReference;
+
+  @override
+  void initState() {
+    super.initState();
+
+    board = Board("", "");
+    databaseReference = database.reference().child("community-board");
+    databaseReference.onChildAdded.listen(_onEntryAdded);
+  } // int _counter = 0;
 
   // void _incrementCounter() {
   //   database.reference().child("message").set({
@@ -55,9 +63,62 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        // title: Text(widget.title),
         centerTitle: true,
       ),
+      body: Column(
+        children: [
+          Flexible(
+            flex: 0,
+              child: Form(
+                key: formKey,
+                child: Flex(
+                  direction: Axis.vertical,
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.subject),
+                      title: TextFormField(
+                        initialValue: "",
+                        onSaved: (val) => board.subject = val,
+                        validator: (val) => val=="" ? val : null,
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.message),
+                      title: TextFormField(
+                        initialValue: "",
+                        onSaved: (val) => board.body = val,
+                        validator: (val) => val=="" ? val : null,
+                      ),
+                    ),
+                  //  Send or Post Button
+                    TextButton(onPressed: () {
+                      handleSubmit();
+                    },
+                      child: Text("Post"),
+                      style: TextButton.styleFrom(primary: Colors.black, backgroundColor: Colors.redAccent),
+                    )
+                  ],
+                ),
+              ))
+        ],
+      ),
     );
+  }
+
+  void _onEntryAdded(Event event) {
+    setState(() {
+      boardMessages.add((Board.fromSnapshot(event.snapshot)));
+    });
+  }
+
+  void handleSubmit() {
+    final FormState form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      form.reset();
+    //  Save form data to the database
+      databaseReference.push().set(board.toJson());
+    }
   }
 }
