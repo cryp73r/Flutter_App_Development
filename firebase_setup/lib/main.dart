@@ -1,6 +1,5 @@
 import 'package:firebase_setup/model/board.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_database/firebase_database.dart';
 
 void main() {
@@ -39,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     board = Board("", "");
     databaseReference = database.reference().child("community-board");
     databaseReference.onChildAdded.listen(_onEntryAdded);
+    databaseReference.onChildChanged.listen(_onEntryChanged);
   } // int _counter = 0;
 
   // void _incrementCounter() {
@@ -120,5 +120,14 @@ class _MyHomePageState extends State<MyHomePage> {
     //  Save form data to the database
       databaseReference.push().set(board.toJson());
     }
+  }
+
+  void _onEntryChanged(Event event) {
+    var oldEntry = boardMessages.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      boardMessages[boardMessages.indexOf(oldEntry)] = Board.fromSnapshot(event.snapshot);
+    });
   }
 }
