@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
     databaseReference = database.reference().child("community-board");
     databaseReference.onChildAdded.listen(_onEntryAdded);
     databaseReference.onChildChanged.listen(_onEntryChanged);
-  } // int _counter = 0;
+  }
 
   // void _incrementCounter() {
   //   database.reference().child("message").set({
