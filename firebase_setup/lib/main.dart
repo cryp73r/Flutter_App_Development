@@ -1,3 +1,4 @@
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_setup/model/board.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -100,7 +101,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                   ],
                 ),
-              ))
+              )),
+          Flexible(
+              child: FirebaseAnimatedList(
+                query: databaseReference,
+                itemBuilder: (_, DataSnapshot snapshot,
+                    Animation<double> animation, int index) {
+                  return Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.red,
+                      ),
+                      title: Text(boardMessages[index].subject),
+                      subtitle: Text(boardMessages[index].body),
+                    ),
+                  );
+                },
+              ),
+          ),
         ],
       ),
     );
