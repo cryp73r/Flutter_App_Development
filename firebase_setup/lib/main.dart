@@ -42,24 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
     databaseReference.onChildChanged.listen(_onEntryChanged);
   }
 
-  // void _incrementCounter() {
-  //   database.reference().child("message").set({
-  //     "firstName": "Priyanshu",
-  //     "lastName": "Singh",
-  //     "age": 20
-  //   });
-  //   setState(() {
-  //     database.reference().child("message").once().then((DataSnapshot snapshot) {
-  //       Map<dynamic, dynamic> data = snapshot.value;
-  //
-  //       print("Values from db: ${data.values}");
-  //       print("Values from db: ${data.keys}");
-  //       print("Values from db: ${snapshot.value}");
-  //     });
-  //     _counter++;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
