@@ -78,8 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<FirebaseUser> _gSignin() async {
-    GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-    GoogleSignInAccount googleSignInAccountAuthentication = await googleSignInAccount.authentication;
-  }
+  // Future<FirebaseUser> _gSignin() async {
+  //   GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+  //   GoogleSignInAccount googleSignInAccountAuthentication = await googleSignInAccount.authentication;
+  // }
 }
