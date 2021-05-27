@@ -19,7 +19,7 @@ class Home extends StatelessWidget {
 
   IconButton searchButton() {
     return IconButton(
-        icon: Icon(Icons.search),
+        icon: Icon(Icons.search, size: 30.0,),
         onPressed: () => debugPrint("Search"),
     );
   }
