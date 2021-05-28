@@ -8,19 +8,29 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset("images/logo-YTS.png",),
+        title: Image.asset(
+          "images/logo-YTS.png",
+        ),
         actions: [
           searchButton(),
         ],
       ),
       body: HomeScreen(),
+      drawer: appDrawer(),
     );
   }
 
   IconButton searchButton() {
     return IconButton(
-        icon: Icon(Icons.search, size: 30.0,),
-        onPressed: () => debugPrint("Search"),
+      icon: Icon(
+        Icons.search,
+        size: 30.0,
+      ),
+      onPressed: () => debugPrint("Search"),
     );
+  }
+
+  Drawer appDrawer() {
+    return Drawer();
   }
 }
