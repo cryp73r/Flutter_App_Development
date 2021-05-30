@@ -6,17 +6,20 @@ import 'package:yts_mx/screens/movieDetailScreen.dart';
 import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _SearchScreenState extends State<SearchScreen> {
+  String _query = "";
   List _rawData = [];
-  int _pageNumber = 1;
   int _maxLimit;
+  int _pageNumber;
+  bool _searching = false;
+  bool _displayWheel = true;
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -28,29 +31,77 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_pageNumber * 20 <= _maxLimit) {
           _getMoreData();
         }
+        else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("No more Movies related to search."),
+          ));
+          setState(() {
+            _displayWheel = false;
+          });
+        }
       }
     });
     super.initState();
   }
 
   _getMoreData() async {
-    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber);
+    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber, query_term: _query);
     _rawData.addAll(tempData["data"]["movies"]);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(actions: [
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width - 80,
+            margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: TextField(
+              autofocus: true,
+              style: TextStyle(fontSize: 20.0, color: Colors.white70),
+              decoration: InputDecoration(
+                  hintText: "Interstellar",
+                  hintStyle: TextStyle(color: Colors.white54),
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  focusedBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none),
+              autocorrect: false,
+              textInputAction: TextInputAction.search,
+              onChanged: (String queryTerm) {
+                _query = queryTerm;
+                _pageNumber = 1;
+                _rawData.clear();
+                _searching = true;
+                if (queryTerm=="") {
+                  _searching = false;
+                }
+                setState(() {});
+              },
+            ),
+          ),
+        ),
+      ]),
+      body: _searching ? searchResult(context) : Container(),
+      // drawer: appDrawer(context),
+    );
+  }
+
+  Widget searchResult(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlListMovies, page: _pageNumber),
+        future: getJsonData(baseUrlListMovies, query_term: _query),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map tempData = snapshot.data;
             _maxLimit = tempData["data"]["movie_count"];
-            if (_pageNumber == 1) {
-              _rawData = tempData["data"]["movies"];
+            if (_maxLimit>0) {
+              if (_pageNumber == 1) {
+                _rawData = tempData["data"]["movies"];
+              }
+              return successResult(context);
             }
-            return successResult(context);
           }
           return Center(
             child: Container(
@@ -62,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                   ),
                   Text(
-                    "Hold Tight - Getting Data...",
+                    "Searching...",
                     style: TextStyle(
                       letterSpacing: 2.0,
                     ),
@@ -77,10 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget successResult(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
-    return RefreshIndicator(
-      semanticsLabel: "Refreshing...",
-      onRefresh: _refreshData,
-      displacement: 100.0,
+    return Container(
       child: Scrollbar(
         radius: Radius.circular(20.0),
         child: Container(
@@ -93,10 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
               if (index == _rawData.length) {
-                return CupertinoActivityIndicator(
+                return _displayWheel ? CupertinoActivityIndicator(
                   radius: 20.0,
-                );
-              }
+                )
+                :Text("");
+                }
               return GestureDetector(
                 child: Container(
                   child: Column(
@@ -162,8 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => MovieDetailScreen(
-                                movieId: _rawData[index]["id"],
-                              )));
+                            movieId: _rawData[index]["id"],
+                          )));
                 },
               );
             },
@@ -171,13 +220,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _refreshData() async {
-    await Future.delayed(Duration(seconds: 3));
-    setState(() {
-      _rawData.clear();
-      _pageNumber = 1;
-    });
   }
 }

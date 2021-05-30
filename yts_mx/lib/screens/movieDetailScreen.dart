@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
+import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/utils/genreFixer.dart';
 import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/magnetLinkGenerator.dart';
@@ -22,6 +23,7 @@ class MovieDetailScreen extends StatelessWidget {
         ],
       ),
       body: DisplayData(movieId: movieId),
+      drawer: appDrawer(context),
     );
   }
 
@@ -108,6 +110,7 @@ class DisplayData extends StatelessWidget {
         ),
       ),
       ListView(
+        physics: BouncingScrollPhysics(),
         children: [
           coverNameYear(_height, _width, rawData),
           summaryHolder(rawData["data"]["movie"]["description_full"]),
@@ -296,112 +299,124 @@ class DisplayData extends StatelessWidget {
 
   Widget movieSuggestion(double _height, double _width) {
     return FutureBuilder(
-      future: getJsonData(baseUrlMovieSuggestions, movie_id: movieId),
+        future: getJsonData(baseUrlMovieSuggestions, movie_id: movieId),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-        if (snapshot.hasData) {
-          Map _tempData = snapshot.data;
-          return Container(
-            margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Similar Movies", style: TextStyle(
-                    fontSize: 20.0,
-                    letterSpacing: 2.0,
-                    fontWeight: FontWeight.w600),),
-                Container(
-                  margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
-                ),
-                SizedBox(
-                  height: _height/3.7,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                      itemCount: _tempData["data"]["movies"].length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return GestureDetector(
-                          child: Container(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: _height / 5,
-                                  width: _width / 3,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(width: 3.0, color: Colors.white),
-                                  ),
-                                  child: Image.network(
-                                    getImageData(
-                                        imageNameFixer(
-                                            _tempData["data"]["movies"][index]["slug"]),
-                                        "medium-cover"),
-                                    fit: BoxFit.fill,
-                                    frameBuilder: (BuildContext context, Widget child,
-                                        int frame, bool wasSynchronouslyLoaded) {
-                                      if (wasSynchronouslyLoaded) {
-                                        return child;
-                                      }
-                                      return AnimatedOpacity(
-                                        child: child,
-                                        opacity: frame == null ? 0 : 1,
-                                        duration: const Duration(seconds: 1),
-                                        curve: Curves.easeOut,
-                                      );
-                                    },
-                                    errorBuilder: (BuildContext context, Object object,
-                                        StackTrace trace) {
-                                      return Container(
-                                        height: _height / 5,
-                                        width: _width / 3,
-                                        child: Center(
-                                          child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.photo,
-                                                size: 60.0,
-                                                color: Colors.white70,
-                                              )),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Text(
-                                  _tempData["data"]["movies"][index]["title"].length <= 15
-                                      ? _tempData["data"]["movies"][index]["title"]
-                                      : "${_tempData["data"]["movies"][index]["title"].substring(0, 15)}...",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  "${_tempData["data"]["movies"][index]["year"]}",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.white70),
-                                ),
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MovieDetailScreen(
-                                      movieId: _tempData["data"]["movies"][index]["id"],
-                                    )));
-                          },
-                        );
-                      }
+          if (snapshot.hasData) {
+            Map _tempData = snapshot.data;
+            return Container(
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Similar Movies",
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        letterSpacing: 2.0,
+                        fontWeight: FontWeight.w600),
                   ),
-                ),
-              ],
-            ),
-          );
-        }
-        return Container(
-          margin: const EdgeInsets.all(15.0),
+                  Container(
+                    margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
+                  ),
+                  SizedBox(
+                    height: _height / 3.7,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _tempData["data"]["movies"].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            child: Container(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: _height / 5,
+                                    width: _width / 3,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 3.0, color: Colors.white),
+                                    ),
+                                    child: Image.network(
+                                      getImageData(
+                                          imageNameFixer(_tempData["data"]
+                                              ["movies"][index]["slug"]),
+                                          "medium-cover"),
+                                      fit: BoxFit.fill,
+                                      frameBuilder: (BuildContext context,
+                                          Widget child,
+                                          int frame,
+                                          bool wasSynchronouslyLoaded) {
+                                        if (wasSynchronouslyLoaded) {
+                                          return child;
+                                        }
+                                        return AnimatedOpacity(
+                                          child: child,
+                                          opacity: frame == null ? 0 : 1,
+                                          duration: const Duration(seconds: 1),
+                                          curve: Curves.easeOut,
+                                        );
+                                      },
+                                      errorBuilder: (BuildContext context,
+                                          Object object, StackTrace trace) {
+                                        return Container(
+                                          height: _height / 5,
+                                          width: _width / 3,
+                                          child: Center(
+                                            child: Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.photo,
+                                                  size: 60.0,
+                                                  color: Colors.white70,
+                                                )),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Text(
+                                    _tempData["data"]["movies"][index]["title"]
+                                                .length <=
+                                            15
+                                        ? _tempData["data"]["movies"][index]
+                                            ["title"]
+                                        : "${_tempData["data"]["movies"][index]["title"].substring(0, 15)}...",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "${_tempData["data"]["movies"][index]["year"]}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MovieDetailScreen(
+                                            movieId: _tempData["data"]["movies"]
+                                                [index]["id"],
+                                          )));
+                            },
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Container(
+            margin: const EdgeInsets.all(15.0),
             child: Column(
               children: [
-                CupertinoActivityIndicator(radius: 25.0,),
+                CupertinoActivityIndicator(
+                  radius: 25.0,
+                ),
                 Container(
                   margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
                 ),
@@ -413,8 +428,7 @@ class DisplayData extends StatelessWidget {
                 )
               ],
             ),
-        );
-        }
-    );
+          );
+        });
   }
 }

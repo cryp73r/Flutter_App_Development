@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:yts_mx/screens/aboutUsScreen.dart';
+import 'package:yts_mx/screens/announcementScreen.dart';
 import 'package:yts_mx/screens/home.dart';
+import 'package:yts_mx/screens/homeScreen.dart';
+import 'package:yts_mx/screens/howToDownloadScreen.dart';
+import 'package:yts_mx/screens/searchScreen.dart';
+import 'package:yts_mx/screens/trackerListScreen.dart';
+import 'package:yts_mx/screens/updateAppScreen.dart';
 
 class App extends StatelessWidget {
   const App({Key key}) : super(key: key);
@@ -12,6 +19,16 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.dark,
       title: "YTS.MX",
       home: Home(),
+      routes: {
+        "/home": (_) => Home(),
+        "/homeScreen": (_) => HomeScreen(),
+        "/announcementScreen": (_) => AnnouncementScreen(),
+        "/howToDownloadScreen": (_) => HowToDownloadScreen(),
+        "/trackerListScreen": (_) => TrackerListScreen(),
+        "/updateAppScreen": (_) => UpdateAppScreen(),
+        "/aboutUsScreen": (_) => AboutUsScreen(),
+        "/searchScreen": (_) => SearchScreen(),
+      },
     );
   }
 
@@ -35,8 +52,8 @@ class App extends StatelessWidget {
       cardColor: Color(0xFF151515),
       canvasColor: Colors.black,
       buttonTheme: Theme.of(context).buttonTheme.copyWith(
-        colorScheme: ColorScheme.dark(),
-      ),
+            colorScheme: ColorScheme.dark(),
+          ),
     );
   }
 }
