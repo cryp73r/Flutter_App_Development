@@ -24,6 +24,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
+    if (_maxLimit<=6) {
+      setState(() {
+      _displayWheel = false;
+      });
+    }
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -62,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
               autofocus: true,
               style: TextStyle(fontSize: 20.0, color: Colors.white70),
               decoration: InputDecoration(
-                  hintText: "Interstellar",
+                  hintText: "Be Precise, Like: Interstellar",
                   hintStyle: TextStyle(color: Colors.white54),
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   focusedBorder: InputBorder.none,
@@ -84,8 +89,42 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ]),
-      body: _searching ? searchResult(context) : Container(),
+      body: _searching ? searchResult(context) : notSearching(context),
       // drawer: appDrawer(context),
+    );
+  }
+  
+  Widget notSearching(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("App starts searching each time you enter 1 Character.", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 10.0),),
+            Text("Be very Precise with search to save time.", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 5.0),),
+            Text("Like: 'Inter' won't show any result,", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 5.0),),
+            Text("but 'Interstellar' will show.", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 5.0),),
+            Text("After typing new character,", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 5.0),),
+            Text("if results are not shown in 5-8s,", style: bodyStyle(),),
+            Container(margin: const EdgeInsets.only(top: 5.0),),
+            Text("type new Character.", style: bodyStyle(),)
+          ],
+        ),
+      ),
+    );
+  }
+
+  TextStyle bodyStyle() {
+    return TextStyle(
+      fontSize: 16.0,
+      color: Colors.white38,
+      fontWeight: FontWeight.w400,
     );
   }
 

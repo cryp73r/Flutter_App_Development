@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yts_mx/screens/aboutUsScreen.dart';
 import 'package:yts_mx/screens/announcementScreen.dart';
 import 'package:yts_mx/screens/home.dart';
@@ -13,6 +14,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       darkTheme: darkThemeData(context),

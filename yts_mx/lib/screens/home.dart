@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/screens/homeScreen.dart';
 
-class Home extends StatelessWidget {
+
+class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  bool _activated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +47,16 @@ class Home extends StatelessWidget {
     return IconButton(
       tooltip: "Filter",
       icon: Icon(
-        Icons.filter_alt,
+        _activated?Icons.clear:Icons.filter_alt,
         size: 30.0,
       ),
       onPressed: () {
-        Navigator.pushNamed(context, "/searchScreen");
+        if (_activated) {
+          _activated = false;
+        } else {
+          _activated = true;
+        }
+        setState(() {});
       },
     );
   }

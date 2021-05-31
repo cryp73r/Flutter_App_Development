@@ -113,6 +113,7 @@ class DisplayData extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         children: [
           coverNameYear(_height, _width, rawData),
+          screenshotHolder(_height, _width),
           summaryHolder(rawData["data"]["movie"]["description_full"]),
           movieSuggestion(_height, _width),
         ],
@@ -154,10 +155,9 @@ class DisplayData extends StatelessWidget {
                 child: Center(
                   child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.photo,
-                        size: 60.0,
-                        color: Colors.white70,
+                      child: Image.asset(
+                        "images/logo-YTS.png",
+                        fit: BoxFit.fill,
                       )),
                 ),
               );
@@ -235,31 +235,50 @@ class DisplayData extends StatelessWidget {
                       child: Icon(
                         Icons.thumb_up,
                         color: Colors.white60,
+                        size: 20.0,
                       )),
                   Container(
                       margin: const EdgeInsets.only(
-                          top: 4.0, bottom: 4.0, left: 4.0, right: 15.0),
+                          top: 4.0, bottom: 4.0, left: 4.0, right: 8.0),
                       child: Text(
                         "${rawData["data"]["movie"]["like_count"]}",
                         style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 17.5,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.0,
                             color: Colors.white70),
                       )),
                   Container(
                       margin: const EdgeInsets.only(
-                          top: 4.0, bottom: 4.0, left: 15.0, right: 4.0),
+                          top: 4.0, bottom: 4.0, left: 8.0, right: 2.0),
                       child: Icon(
                         Icons.download,
                         color: Colors.white60,
+                        size: 20.0,
                       )),
                   Container(
-                      margin: const EdgeInsets.all(4.0),
+                      margin: const EdgeInsets.fromLTRB(2.0, 4.0, 8.0, 4.0),
                       child: Text(
                         "${rawData["data"]["movie"]["download_count"]}",
                         style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 17.5,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.0,
+                            color: Colors.white70),
+                      )),
+                  Container(
+                      margin: const EdgeInsets.only(
+                          top: 4.0, bottom: 4.0, left: 8.0, right: 4.0),
+                      child: Icon(
+                        Icons.timer,
+                        color: Colors.white60,
+                        size: 20.0,
+                      )),
+                  Container(
+                      margin: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
+                      child: Text(
+                        "${rawData["data"]["movie"]["runtime"]} min",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.0,
                             color: Colors.white70),
                       )),
                 ],
@@ -269,6 +288,111 @@ class DisplayData extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget screenshotHolder(double _height, double _width) {
+    return FutureBuilder(
+        future: getJsonData(baseUrlMovieDetails,
+            movie_id: movieId, with_images: true),
+        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+          if (snapshot.hasData) {
+            Map _tempData = snapshot.data;
+            return Container(
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Screenshots",
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        letterSpacing: 2.0,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
+                  ),
+                  SizedBox(
+                    height: _height / 4.5,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: 3,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            padding: const EdgeInsets.all(3.5),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: _height / 5,
+                                  width: _width / 2,
+                                  child: Image.network(
+                                    getImageData(
+                                        imageNameFixer(
+                                            _tempData["data"]["movie"]["slug"]),
+                                        "medium-screenshot${index + 1}"),
+                                    fit: BoxFit.fill,
+                                    frameBuilder: (BuildContext context,
+                                        Widget child,
+                                        int frame,
+                                        bool wasSynchronouslyLoaded) {
+                                      if (wasSynchronouslyLoaded) {
+                                        return child;
+                                      }
+                                      return AnimatedOpacity(
+                                        child: child,
+                                        opacity: frame == null ? 0 : 1,
+                                        duration: const Duration(seconds: 1),
+                                        curve: Curves.easeOut,
+                                      );
+                                    },
+                                    errorBuilder: (BuildContext context,
+                                        Object object, StackTrace trace) {
+                                      return Container(
+                                        height: _height / 5,
+                                        width: _width / 2,
+                                        child: Center(
+                                          child: Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Image.asset(
+                                                  "images/logo-YTS.png",
+                                                fit: BoxFit.fill,
+                                              )
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Container(
+            margin: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                CupertinoActivityIndicator(
+                  radius: 25.0,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                ),
+                Text(
+                  "Relax - Loading Screenshots...",
+                  style: TextStyle(
+                    letterSpacing: 2.0,
+                  ),
+                )
+              ],
+            ),
+          );
+        });
   }
 
   Widget summaryHolder(String synopsis) {
@@ -364,10 +488,9 @@ class DisplayData extends StatelessWidget {
                                           child: Center(
                                             child: Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Icon(
-                                                  Icons.photo,
-                                                  size: 60.0,
-                                                  color: Colors.white70,
+                                                child: Image.asset(
+                                                  "images/logo-YTS.png",
+                                                  fit: BoxFit.fill,
                                                 )),
                                           ),
                                         );
@@ -377,10 +500,10 @@ class DisplayData extends StatelessWidget {
                                   Text(
                                     _tempData["data"]["movies"][index]["title"]
                                                 .length <=
-                                            15
+                                            17
                                         ? _tempData["data"]["movies"][index]
                                             ["title"]
-                                        : "${_tempData["data"]["movies"][index]["title"].substring(0, 15)}...",
+                                        : "${_tempData["data"]["movies"][index]["title"].substring(0, 18)}...",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),

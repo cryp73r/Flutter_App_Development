@@ -131,20 +131,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Center(
                                 child: Padding(
                                     padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.photo,
-                                      size: 60.0,
-                                      color: Colors.white70,
-                                    )),
+                                    child: Image.asset(
+                                      "images/logo-YTS.png",
+                                      fit: BoxFit.fill,
+                                    ),
+                                ),
                               ),
                             );
                           },
                         ),
                       ),
                       Text(
-                        _rawData[index]["title"].length <= 15
+                        _rawData[index]["title"].length <= 17
                             ? _rawData[index]["title"]
-                            : "${_rawData[index]["title"].substring(0, 15)}...",
+                            : "${_rawData[index]["title"].substring(0, 18)}...",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
