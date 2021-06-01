@@ -16,7 +16,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   String _query = "";
   List _rawData = [];
-  int _maxLimit;
+  int _maxLimit = 0;
   int _pageNumber;
   bool _searching = false;
   bool _displayWheel = true;
@@ -24,11 +24,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    if (_maxLimit<=6) {
-      setState(() {
-      _displayWheel = false;
-      });
-    }
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -82,6 +77,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 _searching = true;
                 if (queryTerm=="") {
                   _searching = false;
+                }
+                if (_maxLimit<=6) {
+                  _displayWheel = false;
                 }
                 setState(() {});
               },

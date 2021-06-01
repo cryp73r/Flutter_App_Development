@@ -1,47 +1,48 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<Map> getJsonData(String apiUrl, {int limit, int page, String quality, int minimum_rating, String query_term, String genre, String sort_by, String order_by, bool with_rt_ratings, int movie_id, bool with_images, bool with_cast}) async {
   http.Response response;
   if (limit != null) {
-    response = await http.get(Uri.parse(apiUrl + "limit=$limit&"));
+    apiUrl += "limit=$limit&";
   }
-  else if (page != null) {
-    response = await http.get(Uri.parse(apiUrl + "page=$page&"));
+  if (page != null) {
+    apiUrl += "page=$page&";
   }
-  else if (quality != null) {
-    response = await http.get(Uri.parse(apiUrl + "quality=$quality&"));
+  if (quality != null) {
+    apiUrl += "quality=$quality&";
   }
-  else if (minimum_rating != null) {
-    response = await http.get(Uri.parse(apiUrl + "minimum_rating=$minimum_rating&"));
+  if (minimum_rating != null) {
+    apiUrl += "minimum_rating=$minimum_rating&";
   }
-  else if (query_term != null) {
-    response = await http.get(Uri.parse(apiUrl + "query_term=$query_term&"));
+  if (query_term != null) {
+    apiUrl += "query_term=$query_term&";
   }
-  else if (genre != null) {
-    response = await http.get(Uri.parse(apiUrl + "genre=$genre&"));
+  if (genre != null) {
+    if (genre != "All") {
+      apiUrl += "genre=$genre&";
+    }
   }
-  else if (sort_by != null) {
-    response = await http.get(Uri.parse(apiUrl + "sort_by=$sort_by&"));
+  if (sort_by != null) {
+    apiUrl += "sort_by=$sort_by&";
   }
-  else if (order_by != null) {
-    response = await http.get(Uri.parse(apiUrl + "order_by=$order_by&"));
+  if (order_by != null) {
+    apiUrl += "order_by=$order_by&";
   }
-  else if (with_rt_ratings != null) {
-    response = await http.get(Uri.parse(apiUrl + "with_rt_ratings=$with_rt_ratings&"));
+  if (with_rt_ratings != null) {
+    apiUrl += "with_rt_ratings=$with_rt_ratings&";
   }
-  else if (movie_id != null) {
-    response = await http.get(Uri.parse(apiUrl + "movie_id=$movie_id&"));
+  if (movie_id != null) {
+    apiUrl += "movie_id=$movie_id&";
   }
-  else if (with_images != null) {
-    response = await http.get(Uri.parse(apiUrl + "with_images=$with_images&"));
+  if (with_images != null) {
+    apiUrl += "with_images=$with_images&";
   }
-  else if (with_cast != null) {
-    response = await http.get(Uri.parse(apiUrl + "with_cast=$with_cast&"));
+  if (with_cast != null) {
+    apiUrl += "with_cast=$with_cast&";
   }
-  else {
-    response = await http.get(Uri.parse(apiUrl));
-  }
-
+  debugPrint(apiUrl);
+  response = await http.get(Uri.parse(apiUrl)).timeout(Duration(seconds: 10));
   return json.decode("${response.body}");
 }

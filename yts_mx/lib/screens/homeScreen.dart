@@ -7,7 +7,13 @@ import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
+  final String quality;
+  final int minimumRating;
+  final String genre;
+  final String sortBy;
+  final String orderBy;
+
+  const HomeScreen({Key key, this.quality, this.minimumRating, this.genre, this.sortBy, this.orderBy}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -34,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _getMoreData() async {
-    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber);
+    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber, quality: widget.quality, minimum_rating: widget.minimumRating, genre: widget.genre, sort_by: widget.sortBy, order_by: widget.orderBy);
     _rawData.addAll(tempData["data"]["movies"]);
     setState(() {});
   }
@@ -42,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlListMovies, page: _pageNumber),
+        future: getJsonData(baseUrlListMovies, page: _pageNumber, quality: widget.quality, minimum_rating: widget.minimumRating, genre: widget.genre, sort_by: widget.sortBy, order_by: widget.orderBy),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map tempData = snapshot.data;
