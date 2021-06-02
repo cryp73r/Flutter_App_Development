@@ -13,7 +13,14 @@ class HomeScreen extends StatefulWidget {
   final String sortBy;
   final String orderBy;
 
-  const HomeScreen({Key key, this.quality, this.minimumRating, this.genre, this.sortBy, this.orderBy}) : super(key: key);
+  const HomeScreen(
+      {Key key,
+      this.quality,
+      this.minimumRating,
+      this.genre,
+      this.sortBy,
+      this.orderBy})
+      : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -40,7 +47,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _getMoreData() async {
-    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber, quality: widget.quality, minimum_rating: widget.minimumRating, genre: widget.genre, sort_by: widget.sortBy, order_by: widget.orderBy);
+    Map tempData = await getJsonData(baseUrlListMovies,
+        page: _pageNumber,
+        quality: widget.quality,
+        minimum_rating: widget.minimumRating,
+        genre: widget.genre,
+        sort_by: widget.sortBy,
+        order_by: widget.orderBy);
     _rawData.addAll(tempData["data"]["movies"]);
     setState(() {});
   }
@@ -48,7 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlListMovies, page: _pageNumber, quality: widget.quality, minimum_rating: widget.minimumRating, genre: widget.genre, sort_by: widget.sortBy, order_by: widget.orderBy),
+        future: getJsonData(baseUrlListMovies,
+            page: _pageNumber,
+            quality: widget.quality,
+            minimum_rating: widget.minimumRating,
+            genre: widget.genre,
+            sort_by: widget.sortBy,
+            order_by: widget.orderBy),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map tempData = snapshot.data;
@@ -105,46 +124,50 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return GestureDetector(
                 child: Container(
+                  margin: EdgeInsets.only(left: 0.02 * _width, top: 0.005 * _height, right: 0.02 * _width),
                   child: Column(
                     children: [
-                      Container(
-                        height: _height / 5,
-                        width: _width / 3,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 3.0, color: Colors.white),
-                        ),
-                        child: Image.network(
-                          getImageData(imageNameFixer(_rawData[index]["slug"]),
-                              "medium-cover"),
-                          fit: BoxFit.fill,
-                          frameBuilder: (BuildContext context, Widget child,
-                              int frame, bool wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded) {
-                              return child;
-                            }
-                            return AnimatedOpacity(
-                              child: child,
-                              opacity: frame == null ? 0 : 1,
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeOut,
-                            );
-                          },
-                          errorBuilder: (BuildContext context, Object object,
-                              StackTrace trace) {
-                            return Container(
-                              height: _height / 5,
-                              width: _width / 3,
-                              child: Center(
-                                child: Padding(
+                      Expanded(
+                        flex: (_height ~/ 5).toInt(),
+                        child: Container(
+                          height: _height / 5,
+                          width: _width / 3,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 3.0, color: Colors.white),
+                          ),
+                          child: Image.network(
+                            getImageData(imageNameFixer(_rawData[index]["slug"]),
+                                "medium-cover"),
+                            fit: BoxFit.fill,
+                            frameBuilder: (BuildContext context, Widget child,
+                                int frame, bool wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded) {
+                                return child;
+                              }
+                              return AnimatedOpacity(
+                                child: child,
+                                opacity: frame == null ? 0 : 1,
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeOut,
+                              );
+                            },
+                            errorBuilder: (BuildContext context, Object object,
+                                StackTrace trace) {
+                              return Container(
+                                height: _height / 5,
+                                width: _width / 3,
+                                child: Center(
+                                  child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Image.asset(
                                       "images/logo-YTS.png",
                                       fit: BoxFit.fill,
                                     ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Text(

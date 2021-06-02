@@ -5,14 +5,9 @@ import 'package:yts_mx/JsonData/getJsonData.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
-class UpdateAppScreen extends StatefulWidget {
+class UpdateAppScreen extends StatelessWidget {
   const UpdateAppScreen({Key key}) : super(key: key);
 
-  @override
-  _UpdateAppScreenState createState() => _UpdateAppScreenState();
-}
-
-class _UpdateAppScreenState extends State<UpdateAppScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +18,7 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
           builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
             if (snapshot.hasData) {
               Map rawData = snapshot.data;
-              return successWidget(rawData);
+              return successWidget(context, rawData);
             }
             return Center(
               child: Container(
@@ -48,12 +43,12 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
     );
   }
 
-  Widget successWidget(Map rawData) {
+  Widget successWidget(BuildContext context, Map rawData) {
     return Column(
       children: [
         Flexible(
             child: ListView(
-              physics: BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding: const EdgeInsets.all(8.0),
           children: [
             Image.asset(

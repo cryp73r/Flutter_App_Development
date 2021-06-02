@@ -2,18 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:yts_mx/screens/home.dart';
 
 class FilterScreen extends StatefulWidget {
-  const FilterScreen({Key key}) : super(key: key);
+  final String quality;
+  final int minimumRating;
+  final String genre;
+  final String sortBy;
+  final String orderBy;
+
+  const FilterScreen(
+      {Key key,
+      this.quality,
+      this.minimumRating,
+      this.genre,
+      this.sortBy,
+      this.orderBy})
+      : super(key: key);
 
   @override
   _FilterScreenState createState() => _FilterScreenState();
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  String quality = "All";
-  int minimumRating = 0;
-  String genre = "All";
-  String sortBy = "year";
-  String orderBy = "desc";
+  String quality;
+  int minimumRating;
+  String genre;
+  String sortBy;
+  String orderBy;
 
   bool _qualityEnabled = true;
   bool _minimumRatingEnabled = false;
@@ -22,12 +35,21 @@ class _FilterScreenState extends State<FilterScreen> {
   bool _orderByEnabled = false;
 
   @override
+  void initState() {
+    quality = widget.quality == null ? "All" : widget.quality;
+    minimumRating = widget.minimumRating == null ? 0 : widget.minimumRating;
+    genre = widget.genre == null ? "All" : widget.genre;
+    sortBy = widget.sortBy == null ? "year" : widget.sortBy;
+    orderBy = widget.orderBy == null ? "desc" : widget.orderBy;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
-    return Stack(
-      children: [
-        Row(
+    return Stack(children: [
+      Row(
         children: [
           Container(
             height: (2 * _height) / 3,
@@ -109,24 +131,23 @@ class _FilterScreenState extends State<FilterScreen> {
             color: Colors.green,
           ),
           _qualityEnabled
-              ?qualityContainer(_height, _width)
-          :_minimumRatingEnabled
-          ?ratingContainer(_height, _width)
-          :_genreEnabled
-          ?genreContainer(_height, _width)
-          :_sortByEnabled
-          ?sortByContainer(_height, _width)
-          :_orderByEnabled
-          ?orderByContainer(_height, _width)
-          :Container(),
+              ? qualityContainer(_height, _width)
+              : _minimumRatingEnabled
+                  ? ratingContainer(_height, _width)
+                  : _genreEnabled
+                      ? genreContainer(_height, _width)
+                      : _sortByEnabled
+                          ? sortByContainer(_height, _width)
+                          : _orderByEnabled
+                              ? orderByContainer(_height, _width)
+                              : Container(),
         ],
       ),
-        textButtonHolder(_height, _width),
-    ]
-    );
+      textButtonHolder(),
+    ]);
   }
 
-  Widget textButtonHolder(double _height, double _width) {
+  Widget textButtonHolder() {
     return Container(
       margin: const EdgeInsets.only(right: 30.0, bottom: 30.0),
       alignment: Alignment.bottomRight,
@@ -134,12 +155,15 @@ class _FilterScreenState extends State<FilterScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           TextButton(
-            child: Text("RESET"),
+            child: Text(
+              "RESET",
+              style: TextStyle(fontSize: 16.0),
+            ),
             onPressed: () {
               quality = "All";
               minimumRating = 0;
               genre = "All";
-              sortBy = "date_added";
+              sortBy = "year";
               orderBy = "desc";
 
               _qualityEnabled = true;
@@ -151,14 +175,21 @@ class _FilterScreenState extends State<FilterScreen> {
             },
           ),
           TextButton(
-            child: Text("OK"),
+            child: Text(
+              "OK",
+              style: TextStyle(fontSize: 16.0),
+            ),
             onPressed: () {
-              debugPrint(quality);
-              debugPrint("$minimumRating");
-              debugPrint(genre);
-              debugPrint(sortBy);
-              debugPrint(orderBy);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(quality: quality, minimumRating: minimumRating, genre: genre, sortBy: sortBy, orderBy: orderBy,)));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Home(
+                            quality: quality,
+                            minimumRating: minimumRating,
+                            genre: genre,
+                            sortBy: sortBy,
+                            orderBy: orderBy,
+                          )));
             },
           ),
         ],
@@ -182,9 +213,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     quality = value;
                   });
-                }
-            ),
-            selected: quality=="All",
+                }),
+            selected: quality == "All",
           ),
           ListTile(
             title: const Text("720p"),
@@ -197,46 +227,46 @@ class _FilterScreenState extends State<FilterScreen> {
                 });
               },
             ),
-            selected: quality=="720p",
+            selected: quality == "720p",
           ),
           ListTile(
             title: const Text("1080p"),
-              leading: Radio(
-                value: "1080p",
-                groupValue: quality,
-                onChanged: (String value) {
-                  setState(() {
-                    quality = value;
-                  });
-                },
-              ),
-            selected: quality=="1080p",
+            leading: Radio(
+              value: "1080p",
+              groupValue: quality,
+              onChanged: (String value) {
+                setState(() {
+                  quality = value;
+                });
+              },
+            ),
+            selected: quality == "1080p",
           ),
           ListTile(
             title: const Text("2160p"),
-              leading: Radio(
-                value: "2160p",
-                groupValue: quality,
-                onChanged: (String value) {
-                  setState(() {
-                    quality = value;
-                  });
-                },
-              ),
-            selected: quality=="2160p",
+            leading: Radio(
+              value: "2160p",
+              groupValue: quality,
+              onChanged: (String value) {
+                setState(() {
+                  quality = value;
+                });
+              },
+            ),
+            selected: quality == "2160p",
           ),
           ListTile(
             title: const Text("3D"),
-              leading: Radio(
-                value: "3D",
-                groupValue: quality,
-                onChanged: (String value) {
-                  setState(() {
-                    quality = value;
-                  });
-                },
-              ),
-            selected: quality=="3D",
+            leading: Radio(
+              value: "3D",
+              groupValue: quality,
+              onChanged: (String value) {
+                setState(() {
+                  quality = value;
+                });
+              },
+            ),
+            selected: quality == "3D",
           ),
         ],
       ),
@@ -259,8 +289,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     minimumRating = value;
                   });
-            }),
-            selected: minimumRating==0,
+                }),
+            selected: minimumRating == 0,
           ),
           ListTile(
             title: const Text("1 and above"),
@@ -272,7 +302,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==1,
+            selected: minimumRating == 1,
           ),
           ListTile(
             title: const Text("2 and above"),
@@ -284,7 +314,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==2,
+            selected: minimumRating == 2,
           ),
           ListTile(
             title: const Text("3 and above"),
@@ -296,7 +326,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==3,
+            selected: minimumRating == 3,
           ),
           ListTile(
             title: const Text("4 and above"),
@@ -308,7 +338,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==4,
+            selected: minimumRating == 4,
           ),
           ListTile(
             title: const Text("5 and above"),
@@ -320,7 +350,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==5,
+            selected: minimumRating == 5,
           ),
           ListTile(
             title: const Text("6 and above"),
@@ -332,7 +362,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==6,
+            selected: minimumRating == 6,
           ),
           ListTile(
             title: const Text("7 and above"),
@@ -344,7 +374,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==7,
+            selected: minimumRating == 7,
           ),
           ListTile(
             title: const Text("8 and above"),
@@ -356,7 +386,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==8,
+            selected: minimumRating == 8,
           ),
           ListTile(
             title: const Text("9 and above"),
@@ -368,7 +398,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     minimumRating = value;
                   });
                 }),
-            selected: minimumRating==9,
+            selected: minimumRating == 9,
           ),
         ],
       ),
@@ -391,8 +421,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     genre = value;
                   });
-            }),
-            selected: genre=="All",
+                }),
+            selected: genre == "All",
           ),
           ListTile(
             title: const Text("Action"),
@@ -404,7 +434,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Action",
+            selected: genre == "Action",
           ),
           ListTile(
             title: const Text("Adventure"),
@@ -416,7 +446,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Adventure",
+            selected: genre == "Adventure",
           ),
           ListTile(
             title: const Text("Animation"),
@@ -428,7 +458,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Animation",
+            selected: genre == "Animation",
           ),
           ListTile(
             title: const Text("Biography"),
@@ -440,7 +470,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Biography",
+            selected: genre == "Biography",
           ),
           ListTile(
             title: const Text("Comedy"),
@@ -452,7 +482,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Comedy",
+            selected: genre == "Comedy",
           ),
           ListTile(
             title: const Text("Crime"),
@@ -464,7 +494,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Crime",
+            selected: genre == "Crime",
           ),
           ListTile(
             title: const Text("Documentary"),
@@ -476,7 +506,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Documentary",
+            selected: genre == "Documentary",
           ),
           ListTile(
             title: const Text("Drama"),
@@ -488,7 +518,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Drama",
+            selected: genre == "Drama",
           ),
           ListTile(
             title: const Text("Family"),
@@ -500,7 +530,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Family",
+            selected: genre == "Family",
           ),
           ListTile(
             title: const Text("Fantasy"),
@@ -512,7 +542,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Fantasy",
+            selected: genre == "Fantasy",
           ),
           ListTile(
             title: const Text("Film Noir"),
@@ -524,7 +554,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Film Noir",
+            selected: genre == "Film Noir",
           ),
           ListTile(
             title: const Text("History"),
@@ -536,9 +566,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="History",
+            selected: genre == "History",
           ),
-
           ListTile(
             title: const Text("Horror"),
             leading: Radio(
@@ -549,7 +578,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Horror",
+            selected: genre == "Horror",
           ),
           ListTile(
             title: const Text("Music"),
@@ -561,7 +590,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Music",
+            selected: genre == "Music",
           ),
           ListTile(
             title: const Text("Musical"),
@@ -573,7 +602,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Musical",
+            selected: genre == "Musical",
           ),
           ListTile(
             title: const Text("Mystery"),
@@ -585,7 +614,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Mystery",
+            selected: genre == "Mystery",
           ),
           ListTile(
             title: const Text("Romance"),
@@ -597,7 +626,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Romance",
+            selected: genre == "Romance",
           ),
           ListTile(
             title: const Text("Sci-Fi"),
@@ -609,7 +638,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Sci-Fi",
+            selected: genre == "Sci-Fi",
           ),
           ListTile(
             title: const Text("Short Film"),
@@ -621,7 +650,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Short Film",
+            selected: genre == "Short Film",
           ),
           ListTile(
             title: const Text("Sport"),
@@ -633,7 +662,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Sport",
+            selected: genre == "Sport",
           ),
           ListTile(
             title: const Text("Superhero"),
@@ -645,7 +674,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Superhero",
+            selected: genre == "Superhero",
           ),
           ListTile(
             title: const Text("Thriller"),
@@ -657,7 +686,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Thriller",
+            selected: genre == "Thriller",
           ),
           ListTile(
             title: const Text("War"),
@@ -669,7 +698,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="War",
+            selected: genre == "War",
           ),
           ListTile(
             title: const Text("Western"),
@@ -681,7 +710,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     genre = value;
                   });
                 }),
-            selected: genre=="Western",
+            selected: genre == "Western",
           ),
         ],
       ),
@@ -704,8 +733,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     sortBy = value;
                   });
-            }),
-            selected: sortBy=="title",
+                }),
+            selected: sortBy == "title",
           ),
           ListTile(
             title: const Text("Year"),
@@ -717,7 +746,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="year",
+            selected: sortBy == "year",
           ),
           ListTile(
             title: const Text("Rating"),
@@ -729,7 +758,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="rating",
+            selected: sortBy == "rating",
           ),
           ListTile(
             title: const Text("Peers"),
@@ -741,7 +770,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="peers",
+            selected: sortBy == "peers",
           ),
           ListTile(
             title: const Text("Seeds"),
@@ -753,7 +782,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="seeds",
+            selected: sortBy == "seeds",
           ),
           ListTile(
             title: const Text("Downloads"),
@@ -765,7 +794,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="download_count",
+            selected: sortBy == "download_count",
           ),
           ListTile(
             title: const Text("Likes"),
@@ -777,7 +806,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="like_count",
+            selected: sortBy == "like_count",
           ),
           ListTile(
             title: const Text("Date Added"),
@@ -789,9 +818,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     sortBy = value;
                   });
                 }),
-            selected: sortBy=="date_added",
+            selected: sortBy == "date_added",
           ),
-
         ],
       ),
     );
@@ -813,8 +841,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     orderBy = value;
                   });
-            }),
-            selected: orderBy=="desc",
+                }),
+            selected: orderBy == "desc",
           ),
           ListTile(
             title: const Text("Ascending"),
@@ -826,7 +854,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     orderBy = value;
                   });
                 }),
-            selected: orderBy=="asc",
+            selected: orderBy == "asc",
           ),
         ],
       ),

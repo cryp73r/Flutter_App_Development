@@ -1,8 +1,20 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
 
-Future<Map> getJsonData(String apiUrl, {int limit, int page, String quality, int minimum_rating, String query_term, String genre, String sort_by, String order_by, bool with_rt_ratings, int movie_id, bool with_images, bool with_cast}) async {
+Future<Map> getJsonData(String apiUrl,
+    {int limit,
+    int page,
+    String quality,
+    int minimum_rating,
+    String query_term,
+    String genre,
+    String sort_by,
+    String order_by,
+    bool with_rt_ratings,
+    int movie_id,
+    bool with_images,
+    bool with_cast}) async {
   http.Response response;
   if (limit != null) {
     apiUrl += "limit=$limit&";
@@ -42,7 +54,6 @@ Future<Map> getJsonData(String apiUrl, {int limit, int page, String quality, int
   if (with_cast != null) {
     apiUrl += "with_cast=$with_cast&";
   }
-  debugPrint(apiUrl);
-  response = await http.get(Uri.parse(apiUrl)).timeout(Duration(seconds: 10));
+  response = await http.get(Uri.parse(apiUrl));
   return json.decode("${response.body}");
 }

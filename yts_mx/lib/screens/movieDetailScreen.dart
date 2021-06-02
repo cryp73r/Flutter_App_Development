@@ -19,7 +19,7 @@ class MovieDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          searchButton(),
+          searchButton(context),
         ],
       ),
       body: DisplayData(movieId: movieId),
@@ -27,13 +27,15 @@ class MovieDetailScreen extends StatelessWidget {
     );
   }
 
-  IconButton searchButton() {
+  IconButton searchButton(BuildContext context) {
     return IconButton(
       icon: Icon(
         Icons.search,
         size: 30.0,
       ),
-      onPressed: () => debugPrint("Search"),
+      onPressed: () {
+        Navigator.pushNamed(context, "/searchScreen");
+      },
     );
   }
 }
@@ -228,60 +230,63 @@ class DisplayData extends StatelessWidget {
                   ),
                 );
               })),
-              Row(
-                children: [
-                  Container(
-                      margin: const EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.thumb_up,
-                        color: Colors.white60,
-                        size: 20.0,
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(
-                          top: 4.0, bottom: 4.0, left: 4.0, right: 8.0),
-                      child: Text(
-                        "${rawData["data"]["movie"]["like_count"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16.0,
-                            color: Colors.white70),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(
-                          top: 4.0, bottom: 4.0, left: 8.0, right: 2.0),
-                      child: Icon(
-                        Icons.download,
-                        color: Colors.white60,
-                        size: 20.0,
-                      )),
-                  Container(
-                      margin: const EdgeInsets.fromLTRB(2.0, 4.0, 8.0, 4.0),
-                      child: Text(
-                        "${rawData["data"]["movie"]["download_count"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16.0,
-                            color: Colors.white70),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(
-                          top: 4.0, bottom: 4.0, left: 8.0, right: 4.0),
-                      child: Icon(
-                        Icons.timer,
-                        color: Colors.white60,
-                        size: 20.0,
-                      )),
-                  Container(
-                      margin: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
-                      child: Text(
-                        "${rawData["data"]["movie"]["runtime"]} min",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16.0,
-                            color: Colors.white70),
-                      )),
-                ],
+              FittedBox(
+                fit: BoxFit.contain,
+                child: Row(
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.thumb_up,
+                          color: Colors.white60,
+                          size: 20.0,
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(
+                            top: 4.0, bottom: 4.0, left: 4.0, right: 8.0),
+                        child: Text(
+                          "${rawData["data"]["movie"]["like_count"]}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
+                              color: Colors.white70),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(
+                            top: 4.0, bottom: 4.0, left: 8.0, right: 2.0),
+                        child: Icon(
+                          Icons.download,
+                          color: Colors.white60,
+                          size: 20.0,
+                        )),
+                    Container(
+                        margin: const EdgeInsets.fromLTRB(2.0, 4.0, 8.0, 4.0),
+                        child: Text(
+                          "${rawData["data"]["movie"]["download_count"]}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
+                              color: Colors.white70),
+                        )),
+                    Container(
+                        margin: const EdgeInsets.only(
+                            top: 4.0, bottom: 4.0, left: 8.0, right: 4.0),
+                        child: Icon(
+                          Icons.timer,
+                          color: Colors.white60,
+                          size: 20.0,
+                        )),
+                    Container(
+                        margin: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
+                        child: Text(
+                          "${rawData["data"]["movie"]["runtime"]} min",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
+                              color: Colors.white70),
+                        )),
+                  ],
+                ),
               ),
             ],
           ),
@@ -355,10 +360,9 @@ class DisplayData extends StatelessWidget {
                                           child: Padding(
                                               padding: EdgeInsets.all(8.0),
                                               child: Image.asset(
-                                                  "images/logo-YTS.png",
+                                                "images/logo-YTS.png",
                                                 fit: BoxFit.fill,
-                                              )
-                                          ),
+                                              )),
                                         ),
                                       );
                                     },
@@ -413,7 +417,7 @@ class DisplayData extends StatelessWidget {
           ),
           Text(
             synopsis,
-            style: TextStyle(fontSize: 16.0, color: Colors.white70),
+            style: TextStyle(fontSize: 17.0, color: Colors.white70),
             textAlign: TextAlign.justify,
           ),
         ],
@@ -445,6 +449,7 @@ class DisplayData extends StatelessWidget {
                   SizedBox(
                     height: _height / 3.7,
                     child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
                         scrollDirection: Axis.horizontal,
                         itemCount: _tempData["data"]["movies"].length,
                         itemBuilder: (BuildContext context, int index) {

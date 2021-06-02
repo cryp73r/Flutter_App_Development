@@ -30,8 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _pageNumber += 1;
         if (_pageNumber * 20 <= _maxLimit) {
           _getMoreData();
-        }
-        else {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("No more Movies related to search."),
           ));
@@ -45,7 +44,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   _getMoreData() async {
-    Map tempData = await getJsonData(baseUrlListMovies, page: _pageNumber, query_term: _query);
+    Map tempData = await getJsonData(baseUrlListMovies,
+        page: _pageNumber, query_term: _query);
     _rawData.addAll(tempData["data"]["movies"]);
     setState(() {});
   }
@@ -75,10 +75,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 _pageNumber = 1;
                 _rawData.clear();
                 _searching = true;
-                if (queryTerm=="") {
+                if (queryTerm == "") {
                   _searching = false;
                 }
-                if (_maxLimit<=6) {
+                if (_maxLimit <= 6) {
                   _displayWheel = false;
                 }
                 setState(() {});
@@ -91,7 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
       // drawer: appDrawer(context),
     );
   }
-  
+
   Widget notSearching(BuildContext context) {
     return Center(
       child: Container(
@@ -99,19 +99,52 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("App starts searching each time you enter 1 Character.", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 10.0),),
-            Text("Be very Precise with search to save time.", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 5.0),),
-            Text("Like: 'Inter' won't show any result,", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 5.0),),
-            Text("but 'Interstellar' will show.", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 5.0),),
-            Text("After typing new character,", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 5.0),),
-            Text("if results are not shown in 5-8s,", style: bodyStyle(),),
-            Container(margin: const EdgeInsets.only(top: 5.0),),
-            Text("type new Character.", style: bodyStyle(),)
+            Text(
+              "App starts searching each time you enter 1 Character.",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 10.0),
+            ),
+            Text(
+              "Be very Precise with search to save time.",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5.0),
+            ),
+            Text(
+              "Like: 'Inter' won't show any result,",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5.0),
+            ),
+            Text(
+              "but 'Interstellar' will show.",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5.0),
+            ),
+            Text(
+              "After typing new character,",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5.0),
+            ),
+            Text(
+              "if results are not shown in 5-8s,",
+              style: bodyStyle(),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5.0),
+            ),
+            Text(
+              "type new Character.",
+              style: bodyStyle(),
+            )
           ],
         ),
       ),
@@ -133,7 +166,7 @@ class _SearchScreenState extends State<SearchScreen> {
           if (snapshot.hasData) {
             Map tempData = snapshot.data;
             _maxLimit = tempData["data"]["movie_count"];
-            if (_maxLimit>0) {
+            if (_maxLimit > 0) {
               if (_pageNumber == 1) {
                 _rawData = tempData["data"]["movies"];
               }
@@ -178,53 +211,58 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
               if (index == _rawData.length) {
-                return _displayWheel ? CupertinoActivityIndicator(
-                  radius: 20.0,
-                )
-                :Text("");
-                }
+                return _displayWheel
+                    ? CupertinoActivityIndicator(
+                        radius: 20.0,
+                      )
+                    : Text("");
+              }
               return GestureDetector(
                 child: Container(
+                  margin: EdgeInsets.only(left: 0.02 * _width, top: 0.005 * _height, right: 0.02 * _width),
                   child: Column(
                     children: [
-                      Container(
-                        height: _height / 5,
-                        width: _width / 3,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 3.0, color: Colors.white),
-                        ),
-                        child: Image.network(
-                          getImageData(imageNameFixer(_rawData[index]["slug"]),
-                              "medium-cover"),
-                          fit: BoxFit.fill,
-                          frameBuilder: (BuildContext context, Widget child,
-                              int frame, bool wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded) {
-                              return child;
-                            }
-                            return AnimatedOpacity(
-                              child: child,
-                              opacity: frame == null ? 0 : 1,
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeOut,
-                            );
-                          },
-                          errorBuilder: (BuildContext context, Object object,
-                              StackTrace trace) {
-                            return Container(
-                              height: _height / 5,
-                              width: _width / 3,
-                              child: Center(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.photo,
-                                      size: 60.0,
-                                      color: Colors.white70,
-                                    )),
-                              ),
-                            );
-                          },
+                      Expanded(
+                        flex: (_height ~/ 5).toInt(),
+                        child: Container(
+                          height: _height / 5,
+                          width: _width / 3,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 3.0, color: Colors.white),
+                          ),
+                          child: Image.network(
+                            getImageData(imageNameFixer(_rawData[index]["slug"]),
+                                "medium-cover"),
+                            fit: BoxFit.fill,
+                            frameBuilder: (BuildContext context, Widget child,
+                                int frame, bool wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded) {
+                                return child;
+                              }
+                              return AnimatedOpacity(
+                                child: child,
+                                opacity: frame == null ? 0 : 1,
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeOut,
+                              );
+                            },
+                            errorBuilder: (BuildContext context, Object object,
+                                StackTrace trace) {
+                              return Container(
+                                height: _height / 5,
+                                width: _width / 3,
+                                child: Center(
+                                  child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.photo,
+                                        size: 60.0,
+                                        color: Colors.white70,
+                                      )),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       Text(
@@ -248,8 +286,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => MovieDetailScreen(
-                            movieId: _rawData[index]["id"],
-                          )));
+                                movieId: _rawData[index]["id"],
+                              )));
                 },
               );
             },

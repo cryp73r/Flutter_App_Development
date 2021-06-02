@@ -2,7 +2,7 @@
     package="com.cryp73r.yts_mx">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="yts_mx"
+        android:label="YTS.MX"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

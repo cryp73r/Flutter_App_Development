@@ -32,9 +32,7 @@ class AboutUsScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.all(15.0),
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-            children: [
+        child: ListView(physics: BouncingScrollPhysics(), children: [
           Text(
             "This app is a simple yts.mx Search Engine. The best thing about this app is that, no matter who is your ISP (Internet Service Provider) or whether yts.mx is blocked by your ISP, the app will work absolutely fine. No need to install any VPN.\n",
             textAlign: TextAlign.justify,
