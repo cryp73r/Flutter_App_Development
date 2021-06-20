@@ -33,6 +33,11 @@ class _HomeState extends State<Home> {
   String orderBy;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     quality = widget.quality == null ? "All" : widget.quality;
     minimumRating = widget.minimumRating == null ? 0 : widget.minimumRating;

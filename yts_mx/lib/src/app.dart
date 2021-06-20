@@ -44,7 +44,6 @@ class App extends StatelessWidget {
       primaryColor: Color(0xFF1D1D1D),
       backgroundColor: Color(0xFF171717),
       indicatorColor: Color(0xff0e1d36),
-      buttonColor: Color(0xff3B3B3B),
       hintColor: Color(0xff280C0B),
       highlightColor: Color(0xff372901),
       hoverColor: Color(0xff3a3a3b),

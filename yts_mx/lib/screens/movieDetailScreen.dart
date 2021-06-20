@@ -221,6 +221,7 @@ class DisplayData extends StatelessWidget {
                               rawData["data"]["movie"]["torrents"][index]
                                       ["type"]
                                   .substring(1));
+                      debugPrint(_magnetUrl);
                       if (await canLaunch(_magnetUrl)) {
                         await launch(_magnetUrl);
                       } else {
