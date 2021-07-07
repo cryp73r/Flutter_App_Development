@@ -35,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.65) {
         _pageNumber += 1;
         if (_pageNumber * 20 <= _maxLimit) {
           _getMoreData();
@@ -114,7 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2),
             itemCount: _rawData.length + 1,
-            physics: BouncingScrollPhysics(),
             controller: _scrollController,
             itemBuilder: (BuildContext context, int index) {
               if (index == _rawData.length) {
@@ -122,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   radius: 20.0,
                 );
               }
-              return GestureDetector(
+              return InkWell(
                 child: Container(
                   margin: EdgeInsets.only(left: 0.02 * _width, top: 0.005 * _height, right: 0.02 * _width),
                   child: Column(

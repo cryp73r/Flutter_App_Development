@@ -117,17 +117,6 @@ Drawer appDrawer(BuildContext context) {
             Navigator.pushNamed(context, "/aboutUsScreen");
           },
         ),
-        ListTile(
-          leading: Icon(
-            Icons.launch,
-            color: Colors.green,
-          ),
-          title: Text("STREAM TORRENT"),
-          onTap: () {
-            Navigator.of(context).pop();
-            Navigator.pushNamed(context, "/torrentStreamer");
-          },
-        ),
       ],
     ),
   );

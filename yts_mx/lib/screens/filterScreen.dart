@@ -48,108 +48,116 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
-    return Stack(children: [
-      Row(
-        children: [
-          Container(
-            height: (2 * _height) / 3,
-            width: (1.15 * _width) / 2.7,
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                ListTile(
-                  title: const Text("QUALITY"),
-                  leading: const Icon(Icons.high_quality_rounded),
-                  selected: _qualityEnabled,
-                  onTap: () {
-                    _qualityEnabled = true;
-                    _minimumRatingEnabled = false;
-                    _genreEnabled = false;
-                    _sortByEnabled = false;
-                    _orderByEnabled = false;
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  title: const Text("MINIMUM RATING"),
-                  leading: const Icon(Icons.star),
-                  selected: _minimumRatingEnabled,
-                  onTap: () {
-                    _qualityEnabled = false;
-                    _minimumRatingEnabled = true;
-                    _genreEnabled = false;
-                    _sortByEnabled = false;
-                    _orderByEnabled = false;
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  title: const Text("GENRE"),
-                  leading: const Icon(Icons.theater_comedy),
-                  selected: _genreEnabled,
-                  onTap: () {
-                    _qualityEnabled = false;
-                    _minimumRatingEnabled = false;
-                    _genreEnabled = true;
-                    _sortByEnabled = false;
-                    _orderByEnabled = false;
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  title: const Text("SORT BY"),
-                  leading: const Icon(Icons.sort_rounded),
-                  selected: _sortByEnabled,
-                  onTap: () {
-                    _qualityEnabled = false;
-                    _minimumRatingEnabled = false;
-                    _genreEnabled = false;
-                    _sortByEnabled = true;
-                    _orderByEnabled = false;
-                    setState(() {});
-                  },
-                ),
-                ListTile(
-                  title: const Text("ORDER BY"),
-                  leading: const Icon(Icons.bookmark_border),
-                  selected: _orderByEnabled,
-                  onTap: () {
-                    _qualityEnabled = false;
-                    _minimumRatingEnabled = false;
-                    _genreEnabled = false;
-                    _sortByEnabled = false;
-                    _orderByEnabled = true;
-                    setState(() {});
-                  },
-                ),
-              ],
+    return Column(children: [
+      Expanded(
+        child: Row(
+          children: [
+            Container(
+              height: (2 * _height) / 3,
+              width: (1.15 * _width) / 2.7,
+              child: ListView(
+                physics: BouncingScrollPhysics(),
+                children: [
+                  ListTile(
+                    title: const Text("QUALITY"),
+                    leading: const Icon(Icons.high_quality_rounded),
+                    selected: _qualityEnabled,
+                    onTap: () {
+                      _qualityEnabled = true;
+                      _minimumRatingEnabled = false;
+                      _genreEnabled = false;
+                      _sortByEnabled = false;
+                      _orderByEnabled = false;
+                      setState(() {});
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("MINIMUM RATING"),
+                    leading: const Icon(Icons.star),
+                    selected: _minimumRatingEnabled,
+                    onTap: () {
+                      _qualityEnabled = false;
+                      _minimumRatingEnabled = true;
+                      _genreEnabled = false;
+                      _sortByEnabled = false;
+                      _orderByEnabled = false;
+                      setState(() {});
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("GENRE"),
+                    leading: const Icon(Icons.theater_comedy),
+                    selected: _genreEnabled,
+                    onTap: () {
+                      _qualityEnabled = false;
+                      _minimumRatingEnabled = false;
+                      _genreEnabled = true;
+                      _sortByEnabled = false;
+                      _orderByEnabled = false;
+                      setState(() {});
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("SORT BY"),
+                    leading: const Icon(Icons.sort_rounded),
+                    selected: _sortByEnabled,
+                    onTap: () {
+                      _qualityEnabled = false;
+                      _minimumRatingEnabled = false;
+                      _genreEnabled = false;
+                      _sortByEnabled = true;
+                      _orderByEnabled = false;
+                      setState(() {});
+                    },
+                  ),
+                  ListTile(
+                    title: const Text("ORDER BY"),
+                    leading: const Icon(Icons.bookmark_border),
+                    selected: _orderByEnabled,
+                    onTap: () {
+                      _qualityEnabled = false;
+                      _minimumRatingEnabled = false;
+                      _genreEnabled = false;
+                      _sortByEnabled = false;
+                      _orderByEnabled = true;
+                      setState(() {});
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: (2 * _height) / 3,
-            width: (0.05 * _width) / 2.7,
-            color: Colors.green,
-          ),
-          _qualityEnabled
-              ? qualityContainer(_height, _width)
-              : _minimumRatingEnabled
-                  ? ratingContainer(_height, _width)
-                  : _genreEnabled
-                      ? genreContainer(_height, _width)
-                      : _sortByEnabled
-                          ? sortByContainer(_height, _width)
-                          : _orderByEnabled
-                              ? orderByContainer(_height, _width)
-                              : Container(),
-        ],
+            Container(
+              height: (2 * _height) / 3,
+              width: (0.05 * _width) / 2.7,
+              color: Colors.green,
+            ),
+            _qualityEnabled
+                ? qualityContainer(_height, _width)
+                : _minimumRatingEnabled
+                    ? ratingContainer(_height, _width)
+                    : _genreEnabled
+                        ? genreContainer(_height, _width)
+                        : _sortByEnabled
+                            ? sortByContainer(_height, _width)
+                            : _orderByEnabled
+                                ? orderByContainer(_height, _width)
+                                : Container(),
+          ],
+        ),
       ),
       textButtonHolder(),
     ]);
   }
 
   Widget textButtonHolder() {
+    bool _enabled = true;
+    if (quality=="All")
+      if (minimumRating==0)
+        if (genre=="All")
+          if (sortBy=="year")
+            if (orderBy=="desc")
+              _enabled = false;
     return Container(
-      margin: const EdgeInsets.only(right: 30.0, bottom: 30.0),
       alignment: Alignment.bottomRight,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -159,28 +167,29 @@ class _FilterScreenState extends State<FilterScreen> {
               "RESET",
               style: TextStyle(fontSize: 16.0),
             ),
-            onPressed: () {
-              quality = "All";
-              minimumRating = 0;
-              genre = "All";
-              sortBy = "year";
-              orderBy = "desc";
+            onPressed: _enabled?() {
+              setState(() {
+                quality = "All";
+                minimumRating = 0;
+                genre = "All";
+                sortBy = "year";
+                orderBy = "desc";
 
-              _qualityEnabled = true;
-              _minimumRatingEnabled = false;
-              _genreEnabled = false;
-              _sortByEnabled = false;
-              _orderByEnabled = false;
-              setState(() {});
-            },
+                _qualityEnabled = true;
+                _minimumRatingEnabled = false;
+                _genreEnabled = false;
+                _sortByEnabled = false;
+                _orderByEnabled = false;
+              });
+            }:null,
           ),
           TextButton(
             child: Text(
-              "OK",
+              "CONFIRM",
               style: TextStyle(fontSize: 16.0),
             ),
             onPressed: () {
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                       builder: (context) => Home(
@@ -189,7 +198,8 @@ class _FilterScreenState extends State<FilterScreen> {
                             genre: genre,
                             sortBy: sortBy,
                             orderBy: orderBy,
-                          )));
+                          )),
+                  (route) => false);
             },
           ),
         ],
@@ -202,7 +212,6 @@ class _FilterScreenState extends State<FilterScreen> {
       height: (2 * _height) / 3,
       width: (1.5 * _width) / 2.7,
       child: ListView(
-        physics: BouncingScrollPhysics(),
         children: [
           ListTile(
             title: const Text("All"),
@@ -278,7 +287,6 @@ class _FilterScreenState extends State<FilterScreen> {
       height: (2 * _height) / 3,
       width: (1.5 * _width) / 2.7,
       child: ListView(
-        physics: BouncingScrollPhysics(),
         children: [
           ListTile(
             title: const Text("0 and above"),
@@ -410,7 +418,6 @@ class _FilterScreenState extends State<FilterScreen> {
       height: (2 * _height) / 3,
       width: (1.5 * _width) / 2.7,
       child: ListView(
-        physics: BouncingScrollPhysics(),
         children: [
           ListTile(
             title: const Text("All"),
@@ -722,7 +729,6 @@ class _FilterScreenState extends State<FilterScreen> {
       height: (2 * _height) / 3,
       width: (1.5 * _width) / 2.7,
       child: ListView(
-        physics: BouncingScrollPhysics(),
         children: [
           ListTile(
             title: const Text("Title"),
@@ -830,7 +836,6 @@ class _FilterScreenState extends State<FilterScreen> {
       height: (2 * _height) / 3,
       width: (1.5 * _width) / 2.7,
       child: ListView(
-        physics: BouncingScrollPhysics(),
         children: [
           ListTile(
             title: const Text("Descending"),

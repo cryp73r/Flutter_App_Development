@@ -41,7 +41,11 @@ class App extends StatelessWidget {
       //0xFF6AC045
       brightness: Brightness.dark,
       primarySwatch: Colors.green,
-      primaryColor: Color(0xFF1D1D1D),
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: Colors.green,
+        accentColor: Color(0xFF1D1D1D),
+        brightness: Brightness.dark
+      ),
       backgroundColor: Color(0xFF171717),
       indicatorColor: Color(0xff0e1d36),
       hintColor: Color(0xff280C0B),
