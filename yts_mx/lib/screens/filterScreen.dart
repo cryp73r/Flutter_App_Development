@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:yts_mx/screens/home.dart';
 
 class FilterScreen extends StatefulWidget {
-  final String quality;
-  final int minimumRating;
-  final String genre;
-  final String sortBy;
-  final String orderBy;
+  final String? quality;
+  final int? minimumRating;
+  final String? genre;
+  final String? sortBy;
+  final String? orderBy;
 
   const FilterScreen(
-      {Key key,
+      {Key? key,
       this.quality,
       this.minimumRating,
       this.genre,
@@ -22,11 +22,11 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  String quality;
-  int minimumRating;
-  String genre;
-  String sortBy;
-  String orderBy;
+  String? quality;
+  int? minimumRating;
+  String? genre;
+  String? sortBy;
+  String? orderBy;
 
   bool _qualityEnabled = true;
   bool _minimumRatingEnabled = false;
@@ -218,7 +218,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "All",
                 groupValue: quality,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     quality = value;
                   });
@@ -230,7 +230,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
               value: "720p",
               groupValue: quality,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
                   quality = value;
                 });
@@ -243,7 +243,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
               value: "1080p",
               groupValue: quality,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
                   quality = value;
                 });
@@ -256,7 +256,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
               value: "2160p",
               groupValue: quality,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
                   quality = value;
                 });
@@ -269,7 +269,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
               value: "3D",
               groupValue: quality,
-              onChanged: (String value) {
+              onChanged: (String? value) {
                 setState(() {
                   quality = value;
                 });
@@ -293,7 +293,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 0,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -305,7 +305,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 1,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -317,7 +317,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 2,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -329,7 +329,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 3,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -341,7 +341,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 4,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -353,7 +353,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 5,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -365,7 +365,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 6,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -377,7 +377,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 7,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -389,7 +389,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 8,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -401,7 +401,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: 9,
                 groupValue: minimumRating,
-                onChanged: (int value) {
+                onChanged: (int? value) {
                   setState(() {
                     minimumRating = value;
                   });
@@ -424,7 +424,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "All",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -436,7 +436,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Action",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -448,7 +448,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Adventure",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -460,7 +460,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Animation",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -472,7 +472,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Biography",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -484,7 +484,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Comedy",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -496,7 +496,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Crime",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -508,7 +508,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Documentary",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -520,7 +520,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Drama",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -532,7 +532,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Family",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -544,7 +544,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Fantasy",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -556,7 +556,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Film Noir",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -568,7 +568,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "History",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -580,7 +580,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Horror",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -592,7 +592,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Music",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -604,7 +604,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Musical",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -616,7 +616,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Mystery",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -628,7 +628,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Romance",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -640,7 +640,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Sci-Fi",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -652,7 +652,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Short Film",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -664,7 +664,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Sport",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -676,7 +676,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Superhero",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -688,7 +688,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Thriller",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -700,7 +700,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "War",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -712,7 +712,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "Western",
                 groupValue: genre,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     genre = value;
                   });
@@ -735,7 +735,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "title",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -747,7 +747,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "year",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -759,7 +759,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "rating",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -771,7 +771,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "peers",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -783,7 +783,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "seeds",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -795,7 +795,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "download_count",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -807,7 +807,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "like_count",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -819,7 +819,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "date_added",
                 groupValue: sortBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     sortBy = value;
                   });
@@ -842,7 +842,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "desc",
                 groupValue: orderBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     orderBy = value;
                   });
@@ -854,7 +854,7 @@ class _FilterScreenState extends State<FilterScreen> {
             leading: Radio(
                 value: "asc",
                 groupValue: orderBy,
-                onChanged: (String value) {
+                onChanged: (String? value) {
                   setState(() {
                     orderBy = value;
                   });

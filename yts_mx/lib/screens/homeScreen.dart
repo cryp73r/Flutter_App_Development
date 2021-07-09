@@ -1,211 +1,199 @@
-import 'package:flutter/cupertino.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
-import 'package:yts_mx/screens/movieDetailScreen.dart';
+import 'package:yts_mx/screens/short_detail_screen.dart';
 import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
-class HomeScreen extends StatefulWidget {
-  final String quality;
-  final int minimumRating;
-  final String genre;
-  final String sortBy;
-  final String orderBy;
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
-  const HomeScreen(
-      {Key key,
-      this.quality,
-      this.minimumRating,
-      this.genre,
-      this.sortBy,
-      this.orderBy})
-      : super(key: key);
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  List _rawData = [];
-  int _pageNumber = 1;
-  int _maxLimit;
-  ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent * 0.65) {
-        _pageNumber += 1;
-        if (_pageNumber * 20 <= _maxLimit) {
-          _getMoreData();
+  void shortDetail(BuildContext context, String ytTrailerCode) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return ShortDetailScreen(ytTrailerCode: ytTrailerCode);
         }
-      }
-    });
-    super.initState();
-  }
-
-  _getMoreData() async {
-    Map tempData = await getJsonData(baseUrlListMovies,
-        page: _pageNumber,
-        quality: widget.quality,
-        minimum_rating: widget.minimumRating,
-        genre: widget.genre,
-        sort_by: widget.sortBy,
-        order_by: widget.orderBy);
-    _rawData.addAll(tempData["data"]["movies"]);
-    setState(() {});
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getJsonData(baseUrlListMovies,
-            page: _pageNumber,
-            quality: widget.quality,
-            minimum_rating: widget.minimumRating,
-            genre: widget.genre,
-            sort_by: widget.sortBy,
-            order_by: widget.orderBy),
-        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-          if (snapshot.hasData) {
-            Map tempData = snapshot.data;
-            _maxLimit = tempData["data"]["movie_count"];
-            if (_pageNumber == 1) {
-              _rawData = tempData["data"]["movies"];
-            }
-            return successResult(context);
-          }
-          return Center(
-            child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                  ),
-                  Text(
-                    "Hold Tight - Getting Data...",
-                    style: TextStyle(
-                      letterSpacing: 2.0,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget successResult(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
-    double _width = MediaQuery.of(context).size.width;
-    return RefreshIndicator(
-      semanticsLabel: "Refreshing...",
-      onRefresh: _refreshData,
-      displacement: 100.0,
-      child: Scrollbar(
-        radius: Radius.circular(20.0),
-        child: Container(
-          margin: const EdgeInsets.all(8.0),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
-            itemCount: _rawData.length + 1,
-            controller: _scrollController,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == _rawData.length) {
-                return CupertinoActivityIndicator(
-                  radius: 20.0,
-                );
-              }
-              return InkWell(
-                child: Container(
-                  margin: EdgeInsets.only(left: 0.02 * _width, top: 0.005 * _height, right: 0.02 * _width),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: (_height ~/ 5).toInt(),
-                        child: Container(
-                          height: _height / 5,
-                          width: _width / 3,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 3.0, color: Colors.white),
-                          ),
-                          child: Image.network(
-                            getImageData(imageNameFixer(_rawData[index]["slug"]),
-                                "medium-cover"),
-                            fit: BoxFit.fill,
-                            frameBuilder: (BuildContext context, Widget child,
-                                int frame, bool wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded) {
-                                return child;
-                              }
-                              return AnimatedOpacity(
-                                child: child,
-                                opacity: frame == null ? 0 : 1,
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeOut,
-                              );
-                            },
-                            errorBuilder: (BuildContext context, Object object,
-                                StackTrace trace) {
-                              return Container(
-                                height: _height / 5,
-                                width: _width / 3,
-                                child: Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                      "images/logo-YTS.png",
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Text(
-                        _rawData[index]["title"].length <= 17
-                            ? _rawData[index]["title"]
-                            : "${_rawData[index]["title"].substring(0, 18)}...",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${_rawData[index]["year"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white70),
-                      ),
-                    ],
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MovieDetailScreen(
-                                movieId: _rawData[index]["id"],
-                              )));
-                },
-              );
-            },
-          ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            carouselHolder(_height),
+            movieHolder(context, _height, "Latest Movies", "year"),
+            movieHolder(context, _height, "Trending Now", "date_added"),
+            movieHolder(context, _height, "Highly Rated", "rating"),
+            movieHolder(context, _height, "Most Downloaded", "download_count"),
+            movieHolder(context, _height, "Most Liked", "like_count"),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _refreshData() async {
-    await Future.delayed(Duration(seconds: 3));
-    setState(() {
-      _rawData.clear();
-      _pageNumber = 1;
-    });
+  Widget movieHolder(BuildContext context, double height, String title, String sortBy) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            children: [
+              Expanded(child: Text(title)),
+              TextButton(onPressed: () {}, child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text("More"), Icon(Icons.keyboard_arrow_right)],)),
+            ],
+          ),
+        ),
+        FutureBuilder(
+            future: getJsonData(baseUrlListMovies,
+                page: 1,
+              sortBy: sortBy,
+            ),
+            builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+              if (snapshot.hasData) {
+                Map tempData = snapshot.data!;
+                return SizedBox(
+                  height: height / 3.3,
+                  width: double.infinity,
+                  child: ListView.builder(
+                      itemCount: tempData["data"]["movies"].length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                        getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
+                                            "medium-cover"),
+                                        fit: BoxFit.cover,
+                                        frameBuilder: (BuildContext context, Widget child,
+                                            int? frame, bool? wasSynchronouslyLoaded) {
+                                          if (wasSynchronouslyLoaded!) {
+                                            return child;
+                                          }
+                                          return AnimatedOpacity(
+                                            child: child,
+                                            opacity: frame == null ? 0 : 1,
+                                            duration: const Duration(seconds: 1),
+                                            curve: Curves.easeOut,
+                                          );
+                                        },
+                                        errorBuilder: (BuildContext context, Object object,
+                                            StackTrace? trace) {
+                                          return Center(
+                                            child: Image.asset(
+                                                  "images/logo-YTS.png",
+                                                  fit: BoxFit.cover,
+                                                ),
+                                            );
+                                        },
+                                      ),
+                                  ),
+                                  onTap: () => shortDetail(context, tempData["data"]["movies"][index]["yt_trailer_code"]),
+                                ),
+                              ),
+                              Text(tempData["data"]["movies"][index]["title"].length <= 12
+                                  ? tempData["data"]["movies"][index]["title"]
+                                  : "${tempData["data"]["movies"][index]["title"].substring(0, 12)}..."),
+                              Text("${tempData["data"]["movies"][index]["year"]}")
+                            ],
+                          ),
+                        );
+                      }
+                  ),
+                );
+              }
+              return LinearProgressIndicator();
+          }
+        ),
+      ],
+    );
+  }
+
+
+  Widget carouselHolder(double height) {
+    return FutureBuilder(
+        future: getJsonData(baseUrlListMovies,
+          page: 1,
+          quality: "2160p",
+          sortBy: "year",
+          limit: 10,
+        ),
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+          if (snapshot.hasData) {
+            Map tempData = snapshot.data!;
+            return Column(
+              children: [
+                CarouselSlider.builder(
+                    itemCount: tempData["data"]["movies"].length,
+                    itemBuilder: (BuildContext context, int index, int realIndex) {
+                      return InkWell(
+                        child: Stack(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(6.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                image: DecorationImage(
+                                  image: NetworkImage(getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
+                                      "medium-cover")),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 20.0,
+                              left: 0.0,
+                              right: 0.0,
+                              child: Container(
+                                width: 300.0,
+                                color: Colors.black54,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 20,
+                                ),
+                                child: Text(tempData["data"]["movies"][index]["title_long"], style: const TextStyle(
+                                  fontSize: 26.0,
+                                  color: Colors.white,
+                                ),
+                                  softWrap: true,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        onTap: () => shortDetail(context, tempData["data"]["movies"][index]["yt_trailer_code"]),
+                      );
+                    },
+                    options: CarouselOptions(
+                      height: height / 3.3,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                      aspectRatio: 16 / 9,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      enableInfiniteScroll: true,
+                      autoPlayAnimationDuration: Duration(milliseconds: 800),
+                      viewportFraction: 0.8,
+                    ),
+                ),
+              ],
+      );
+    }
+          return CircularProgressIndicator();
+      }
+    );
   }
 }

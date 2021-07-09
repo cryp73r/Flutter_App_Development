@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:yts_mx/pages/latest_movies_page.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/screens/filterScreen.dart';
 import 'package:yts_mx/screens/homeScreen.dart';
 
 class Home extends StatefulWidget {
-  final String quality;
-  final int minimumRating;
-  final String genre;
-  final String sortBy;
-  final String orderBy;
+  final String? quality;
+  final int? minimumRating;
+  final String? genre;
+  final String? sortBy;
+  final String? orderBy;
 
   const Home(
-      {Key key,
+      {Key? key,
       this.quality,
       this.minimumRating,
       this.genre,
@@ -25,11 +26,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  String quality;
-  int minimumRating;
-  String genre;
-  String sortBy;
-  String orderBy;
+  String? quality;
+  int? minimumRating;
+  String? genre;
+  String? sortBy;
+  String? orderBy;
 
   @override
   void initState() {
@@ -54,12 +55,13 @@ class _HomeState extends State<Home> {
           filterButton(context),
         ],
       ),
-      body: HomeScreen(
-              quality: widget.quality,
-              minimumRating: widget.minimumRating,
-              genre: widget.genre,
-              sortBy: widget.sortBy == null ? "year" : widget.sortBy,
-              orderBy: widget.orderBy),
+      body: HomeScreen(),
+      // LatestMoviesPage(
+      //         quality: widget.quality,
+      //         minimumRating: widget.minimumRating,
+      //         genre: widget.genre,
+      //         sortBy: widget.sortBy == null ? "year" : widget.sortBy,
+      //         orderBy: widget.orderBy),
       drawer: appDrawer(context),
     );
   }
@@ -69,11 +71,11 @@ class _HomeState extends State<Home> {
         context: context,
         builder: (_) {
           return FilterScreen(
-            quality: quality,
-            minimumRating: minimumRating,
-            genre: genre,
-            sortBy: sortBy,
-            orderBy: orderBy,
+            quality: quality!,
+            minimumRating: minimumRating!,
+            genre: genre!,
+            sortBy: sortBy!,
+            orderBy: orderBy!,
           );
         }
     );

@@ -7,7 +7,7 @@ import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key key}) : super(key: key);
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String _query = "";
   List _rawData = [];
   int _maxLimit = 0;
-  int _pageNumber;
+  int? _pageNumber;
   bool _searching = false;
   bool _displayWheel = true;
   ScrollController _scrollController = ScrollController();
@@ -27,8 +27,8 @@ class _SearchScreenState extends State<SearchScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _pageNumber += 1;
-        if (_pageNumber * 20 <= _maxLimit) {
+        _pageNumber = _pageNumber !+ 1;
+        if (_pageNumber !* 20 <= _maxLimit) {
           _getMoreData();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -45,7 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   _getMoreData() async {
     Map tempData = await getJsonData(baseUrlListMovies,
-        page: _pageNumber, query_term: _query);
+        page: _pageNumber, queryTerm: _query);
     _rawData.addAll(tempData["data"]["movies"]);
     setState(() {});
   }
@@ -161,10 +161,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget searchResult(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlListMovies, query_term: _query),
+        future: getJsonData(baseUrlListMovies, queryTerm: _query),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
-            Map tempData = snapshot.data;
+            Map tempData = snapshot.data!;
             _maxLimit = tempData["data"]["movie_count"];
             if (_maxLimit > 0) {
               if (_pageNumber == 1) {
@@ -235,8 +235,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 "medium-cover"),
                             fit: BoxFit.fill,
                             frameBuilder: (BuildContext context, Widget child,
-                                int frame, bool wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded) {
+                                int? frame, bool? wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded!) {
                                 return child;
                               }
                               return AnimatedOpacity(
@@ -247,7 +247,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               );
                             },
                             errorBuilder: (BuildContext context, Object object,
-                                StackTrace trace) {
+                                StackTrace? trace) {
                               return Container(
                                 height: _height / 5,
                                 width: _width / 3,

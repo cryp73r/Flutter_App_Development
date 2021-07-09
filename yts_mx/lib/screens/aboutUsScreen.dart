@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 
 class AboutUsScreen extends StatelessWidget {
-  const AboutUsScreen({Key key}) : super(key: key);
+  const AboutUsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

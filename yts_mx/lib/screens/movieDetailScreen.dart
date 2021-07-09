@@ -10,9 +10,9 @@ import 'package:yts_mx/utils/magnetLinkGenerator.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class MovieDetailScreen extends StatelessWidget {
-  final int movieId;
+  final int? movieId;
 
-  const MovieDetailScreen({Key key, @required this.movieId}) : super(key: key);
+  const MovieDetailScreen({Key? key, @required this.movieId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +41,17 @@ class MovieDetailScreen extends StatelessWidget {
 }
 
 class DisplayData extends StatelessWidget {
-  final int movieId;
+  final int? movieId;
 
-  const DisplayData({Key key, @required this.movieId}) : super(key: key);
+  const DisplayData({Key? key, @required this.movieId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlMovieDetails, movie_id: movieId),
+        future: getJsonData(baseUrlMovieDetails, movieId: movieId),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
-            Map rawData = snapshot.data;
+            Map rawData = snapshot.data!;
             return successResult(context, rawData);
           }
           return Center(
@@ -89,9 +89,9 @@ class DisplayData extends StatelessWidget {
           fit: BoxFit.fill,
           color: Colors.black87,
           colorBlendMode: BlendMode.darken,
-          frameBuilder: (BuildContext context, Widget child, int frame,
-              bool wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) {
+          frameBuilder: (BuildContext context, Widget child, int? frame,
+              bool? wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded!) {
               return child;
             }
             return AnimatedOpacity(
@@ -102,7 +102,7 @@ class DisplayData extends StatelessWidget {
             );
           },
           errorBuilder:
-              (BuildContext context, Object object, StackTrace trace) {
+              (BuildContext context, Object object, StackTrace? trace) {
             return Container(
               height: _height,
               width: _width,
@@ -137,9 +137,9 @@ class DisplayData extends StatelessWidget {
             getImageData(imageNameFixer(rawData["data"]["movie"]["slug"]),
                 "medium-cover"),
             fit: BoxFit.fill,
-            frameBuilder: (BuildContext context, Widget child, int frame,
-                bool wasSynchronouslyLoaded) {
-              if (wasSynchronouslyLoaded) {
+            frameBuilder: (BuildContext context, Widget child, int? frame,
+                bool? wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded!) {
                 return child;
               }
               return AnimatedOpacity(
@@ -150,7 +150,7 @@ class DisplayData extends StatelessWidget {
               );
             },
             errorBuilder:
-                (BuildContext context, Object object, StackTrace trace) {
+                (BuildContext context, Object object, StackTrace? trace) {
               return Container(
                 height: _height / 3,
                 width: _width / 3,
@@ -299,10 +299,10 @@ class DisplayData extends StatelessWidget {
   Widget screenshotHolder(double _height, double _width) {
     return FutureBuilder(
         future: getJsonData(baseUrlMovieDetails,
-            movie_id: movieId, with_images: true),
+            movieId: movieId, withImages: true),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
-            Map _tempData = snapshot.data;
+            Map _tempData = snapshot.data!;
             return Container(
               margin: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Column(
@@ -340,9 +340,9 @@ class DisplayData extends StatelessWidget {
                                     fit: BoxFit.fill,
                                     frameBuilder: (BuildContext context,
                                         Widget child,
-                                        int frame,
-                                        bool wasSynchronouslyLoaded) {
-                                      if (wasSynchronouslyLoaded) {
+                                        int? frame,
+                                        bool? wasSynchronouslyLoaded) {
+                                      if (wasSynchronouslyLoaded!) {
                                         return child;
                                       }
                                       return AnimatedOpacity(
@@ -353,7 +353,7 @@ class DisplayData extends StatelessWidget {
                                       );
                                     },
                                     errorBuilder: (BuildContext context,
-                                        Object object, StackTrace trace) {
+                                        Object object, StackTrace? trace) {
                                       return Container(
                                         height: _height / 5,
                                         width: _width / 2,
@@ -428,10 +428,10 @@ class DisplayData extends StatelessWidget {
 
   Widget movieSuggestion(double _height, double _width) {
     return FutureBuilder(
-        future: getJsonData(baseUrlMovieSuggestions, movie_id: movieId),
+        future: getJsonData(baseUrlMovieSuggestions, movieId: movieId),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
-            Map _tempData = snapshot.data;
+            Map _tempData = snapshot.data!;
             return Container(
               margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
               child: Column(
@@ -474,9 +474,9 @@ class DisplayData extends StatelessWidget {
                                       fit: BoxFit.fill,
                                       frameBuilder: (BuildContext context,
                                           Widget child,
-                                          int frame,
-                                          bool wasSynchronouslyLoaded) {
-                                        if (wasSynchronouslyLoaded) {
+                                          int? frame,
+                                          bool? wasSynchronouslyLoaded) {
+                                        if (wasSynchronouslyLoaded!) {
                                           return child;
                                         }
                                         return AnimatedOpacity(
@@ -487,7 +487,7 @@ class DisplayData extends StatelessWidget {
                                         );
                                       },
                                       errorBuilder: (BuildContext context,
-                                          Object object, StackTrace trace) {
+                                          Object object, StackTrace? trace) {
                                         return Container(
                                           height: _height / 5,
                                           width: _width / 3,

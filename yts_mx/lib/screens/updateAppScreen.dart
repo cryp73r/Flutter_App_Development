@@ -6,7 +6,7 @@ import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class UpdateAppScreen extends StatelessWidget {
-  const UpdateAppScreen({Key key}) : super(key: key);
+  const UpdateAppScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class UpdateAppScreen extends StatelessWidget {
           future: getJsonData(updateUrl),
           builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
             if (snapshot.hasData) {
-              Map rawData = snapshot.data;
+              Map rawData = snapshot.data!;
               return successWidget(context, rawData);
             }
             return Center(

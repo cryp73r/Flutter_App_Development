@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 
 class TrackerListScreen extends StatelessWidget {
-  const TrackerListScreen({Key key}) : super(key: key);
+  const TrackerListScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

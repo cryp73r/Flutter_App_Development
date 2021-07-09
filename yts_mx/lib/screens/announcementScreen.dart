@@ -5,7 +5,7 @@ import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class AnnouncementScreen extends StatelessWidget {
-  const AnnouncementScreen({Key key}) : super(key: key);
+  const AnnouncementScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class AnnouncementScreen extends StatelessWidget {
         future: getJsonData(announcementUrl),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
-            Map rawData = snapshot.data;
+            Map rawData = snapshot.data!;
             return successWidget(context, rawData);
           }
           return Center(
