@@ -9,11 +9,11 @@ import 'package:yts_mx/utils/utils.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  void shortDetail(BuildContext context, String ytTrailerCode) {
+  void shortDetail(BuildContext context, Map temp, double height) {
     showModalBottomSheet(
         context: context,
         builder: (_) {
-          return ShortDetailScreen(ytTrailerCode: ytTrailerCode);
+          return ShortDetailScreen(height: height, tempData: temp,);
         }
     );
   }
@@ -101,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                                         },
                                       ),
                                   ),
-                                  onTap: () => shortDetail(context, tempData["data"]["movies"][index]["yt_trailer_code"]),
+                                  onTap: () => shortDetail(context, tempData["data"]["movies"][index], height),
                                 ),
                               ),
                               Text(tempData["data"]["movies"][index]["title"].length <= 12
@@ -121,7 +121,6 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
-
 
   Widget carouselHolder(double height) {
     return FutureBuilder(
@@ -175,7 +174,7 @@ class HomeScreen extends StatelessWidget {
                             )
                           ],
                         ),
-                        onTap: () => shortDetail(context, tempData["data"]["movies"][index]["yt_trailer_code"]),
+                        onTap: () => shortDetail(context, tempData["data"]["movies"][index], height),
                       );
                     },
                     options: CarouselOptions(

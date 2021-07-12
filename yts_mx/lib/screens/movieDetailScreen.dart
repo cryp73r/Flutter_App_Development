@@ -1,10 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
-import 'package:yts_mx/utils/genreFixer.dart';
+import 'package:yts_mx/screens/short_detail_screen.dart';
 import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/magnetLinkGenerator.dart';
 import 'package:yts_mx/utils/utils.dart';
@@ -40,15 +42,86 @@ class MovieDetailScreen extends StatelessWidget {
   }
 }
 
-class DisplayData extends StatelessWidget {
+class DisplayData extends StatefulWidget {
   final int? movieId;
 
   const DisplayData({Key? key, @required this.movieId}) : super(key: key);
 
   @override
+  State<DisplayData> createState() => _DisplayDataState();
+}
+
+class _DisplayDataState extends State<DisplayData> {
+
+  bool showMagnet=false;
+  String? magnetUrl;
+
+  void shortDetail(BuildContext context, Map temp, double height) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return ShortDetailScreen(height: height, tempData: temp,);
+        }
+    );
+  }
+
+  String buttonName (String quality, String type, String size) {
+    if (type.length!=3) return "$quality.${type.substring(0, 1).toUpperCase()+type.substring(1, 3)+type.substring(3, 4).toUpperCase()+type.substring(4)} ($size)";
+    else return "$quality.${type.toUpperCase()} ($size)";
+  }
+
+  String torrentName (String quality, String type) {
+    if (type.length!=3) return "$quality.${type.substring(0, 1).toUpperCase()+type.substring(1, 3)+type.substring(3, 4).toUpperCase()+type.substring(4)}";
+    else return "$quality.${type.toUpperCase()}";
+  }
+
+  void downloadAction(String hash, String movieName, String qualityType) async {
+    magnetUrl = magnetLinkGenerator(hash, movieName, qualityType);
+    if (await canLaunch(magnetUrl!)) {
+      await launch(magnetUrl!);
+    } else {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Torrent Client Not Found!"),
+              content: const Text('Press "CANCEL" to Reveal & Copy Magnet URL\nPress "OK" to Search for Torrent Client & Install'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showMagnet=true;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("CANCEL")),
+                TextButton(
+                    onPressed: () async {
+                      String searchUrl = "https://play.google.com/store/search?q=torrent%20client&c=apps";
+                      if (await canLaunch(searchUrl)) {
+                        await launch(searchUrl);
+                      }
+                      else {
+                        throw "Could not launch";
+                      }
+                      setState(() {
+                        showMagnet=false;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("OK")),
+              ],
+            );
+          }
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getJsonData(baseUrlMovieDetails, movieId: movieId),
+        future: getJsonData(baseUrlMovieDetails, movieId: widget.movieId, withImages: true, withCast: true),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map rawData = snapshot.data!;
@@ -112,452 +185,248 @@ class DisplayData extends StatelessWidget {
         ),
       ),
       ListView(
-        physics: BouncingScrollPhysics(),
         children: [
-          coverNameYear(_height, _width, rawData),
-          screenshotHolder(_height, _width),
-          summaryHolder(rawData["data"]["movie"]["description_full"]),
-          movieSuggestion(_height, _width),
+          ytTrailerHolder(rawData),
+          detailsHolder(_height, _width, rawData),
         ],
       ),
     ]);
   }
 
-  Widget coverNameYear(double _height, double _width, Map rawData) {
-    return Row(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(15.0),
-          height: _height / 3,
-          width: _width / 3,
-          decoration: BoxDecoration(
-            border: Border.all(width: 4.0, color: Colors.white),
-          ),
-          child: Image.network(
-            getImageData(imageNameFixer(rawData["data"]["movie"]["slug"]),
-                "medium-cover"),
-            fit: BoxFit.fill,
-            frameBuilder: (BuildContext context, Widget child, int? frame,
-                bool? wasSynchronouslyLoaded) {
-              if (wasSynchronouslyLoaded!) {
-                return child;
-              }
-              return AnimatedOpacity(
-                child: child,
-                opacity: frame == null ? 0 : 1,
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeOut,
-              );
-            },
-            errorBuilder:
-                (BuildContext context, Object object, StackTrace? trace) {
-              return Container(
-                height: _height / 3,
-                width: _width / 3,
-                child: Center(
-                  child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        "images/logo-YTS.png",
-                        fit: BoxFit.fill,
-                      )),
-                ),
-              );
-            },
-          ),
+  Widget ytTrailerHolder(Map tempData) {
+    return YoutubePlayer(
+      controller: YoutubePlayerController(
+        initialVideoId: tempData["data"]["movie"]["yt_trailer_code"],
+        flags: YoutubePlayerFlags(
+          hideControls: false,
+          controlsVisibleAtStart: true,
+          autoPlay: false,
+          mute: false,
+          useHybridComposition: false,
         ),
-        Container(
-          margin: const EdgeInsets.only(top: 15.0),
-          width: _width / 1.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                rawData["data"]["movie"]["title"],
-                style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2.0),
-              ),
-              Text(
-                "\nYear: ${rawData["data"]["movie"]["year"]}",
-                style: TextStyle(fontSize: 17.5, color: Colors.white60),
-              ),
-              Text(
-                "Genre: " +
-                    genreFixer(rawData["data"]["movie"]["genres"]) +
-                    "\n",
-                style: TextStyle(fontSize: 17.5, color: Colors.white60),
-              ),
-              Wrap(
-                  children: List.generate(
-                      rawData["data"]["movie"]["torrents"].length, (index) {
-                return Container(
-                  margin: const EdgeInsets.all(4.0),
-                  child: ElevatedButton(
-                    child: Column(
-                      children: [
-                        Text(rawData["data"]["movie"]["torrents"][index]
-                                ["quality"] +
-                            "." +
-                            rawData["data"]["movie"]["torrents"][index]["type"]
-                                .substring(0, 1)
-                                .toUpperCase() +
-                            rawData["data"]["movie"]["torrents"][index]["type"]
-                                .substring(1)),
-                        Text(rawData["data"]["movie"]["torrents"][index]
-                            ["size"]),
-                      ],
-                    ),
-                    onPressed: () async {
-                      String _magnetUrl = magnetLinkGenerator(
-                          rawData["data"]["movie"]["torrents"][index]["hash"],
-                          rawData["data"]["movie"]["title_long"],
-                          rawData["data"]["movie"]["torrents"][index]
-                              ["quality"],
-                          rawData["data"]["movie"]["torrents"][index]["type"]
-                                  .substring(0, 1)
-                                  .toUpperCase() +
-                              rawData["data"]["movie"]["torrents"][index]
-                                      ["type"]
-                                  .substring(1));
-                      debugPrint(_magnetUrl);
-                      if (await canLaunch(_magnetUrl)) {
-                        await launch(_magnetUrl);
-                      } else {
-                        throw "Could not launch";
-                      }
-                    },
-                  ),
-                );
-              })),
-              FittedBox(
-                fit: BoxFit.contain,
-                child: Row(
-                  children: [
-                    Container(
-                        margin: const EdgeInsets.all(4.0),
-                        child: Icon(
-                          Icons.thumb_up,
-                          color: Colors.white60,
-                          size: 20.0,
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(
-                            top: 4.0, bottom: 4.0, left: 4.0, right: 8.0),
-                        child: Text(
-                          "${rawData["data"]["movie"]["like_count"]}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
-                              color: Colors.white70),
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(
-                            top: 4.0, bottom: 4.0, left: 8.0, right: 2.0),
-                        child: Icon(
-                          Icons.download,
-                          color: Colors.white60,
-                          size: 20.0,
-                        )),
-                    Container(
-                        margin: const EdgeInsets.fromLTRB(2.0, 4.0, 8.0, 4.0),
-                        child: Text(
-                          "${rawData["data"]["movie"]["download_count"]}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
-                              color: Colors.white70),
-                        )),
-                    Container(
-                        margin: const EdgeInsets.only(
-                            top: 4.0, bottom: 4.0, left: 8.0, right: 4.0),
-                        child: Icon(
-                          Icons.timer,
-                          color: Colors.white60,
-                          size: 20.0,
-                        )),
-                    Container(
-                        margin: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
-                        child: Text(
-                          "${rawData["data"]["movie"]["runtime"]} min",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
-                              color: Colors.white70),
-                        )),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
+      showVideoProgressIndicator: true,
+      progressIndicatorColor: Colors.red,
     );
   }
 
-  Widget screenshotHolder(double _height, double _width) {
-    return FutureBuilder(
-        future: getJsonData(baseUrlMovieDetails,
-            movieId: movieId, withImages: true),
-        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-          if (snapshot.hasData) {
-            Map _tempData = snapshot.data!;
-            return Container(
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Screenshots",
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        letterSpacing: 2.0,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
-                  ),
-                  SizedBox(
-                    height: _height / 4.5,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        physics: BouncingScrollPhysics(),
-                        itemCount: 3,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            padding: const EdgeInsets.all(3.5),
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: _height / 5,
-                                  width: _width / 2,
-                                  child: Image.network(
-                                    getImageData(
-                                        imageNameFixer(
-                                            _tempData["data"]["movie"]["slug"]),
-                                        "medium-screenshot${index + 1}"),
-                                    fit: BoxFit.fill,
-                                    frameBuilder: (BuildContext context,
-                                        Widget child,
-                                        int? frame,
-                                        bool? wasSynchronouslyLoaded) {
-                                      if (wasSynchronouslyLoaded!) {
-                                        return child;
-                                      }
-                                      return AnimatedOpacity(
-                                        child: child,
-                                        opacity: frame == null ? 0 : 1,
-                                        duration: const Duration(seconds: 1),
-                                        curve: Curves.easeOut,
-                                      );
-                                    },
-                                    errorBuilder: (BuildContext context,
-                                        Object object, StackTrace? trace) {
-                                      return Container(
-                                        height: _height / 5,
-                                        width: _width / 2,
-                                        child: Center(
-                                          child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Image.asset(
-                                                "images/logo-YTS.png",
-                                                fit: BoxFit.fill,
-                                              )),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                  ),
-                ],
-              ),
-            );
-          }
-          return Container(
-            margin: const EdgeInsets.all(15.0),
-            child: Column(
+  Widget detailsHolder(double height, double width, Map tempData) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(tempData["data"]["movie"]["title"], textAlign: TextAlign.justify, softWrap: true, overflow: TextOverflow.fade,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                CupertinoActivityIndicator(
-                  radius: 25.0,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                ),
-                Text(
-                  "Relax - Loading Screenshots...",
-                  style: TextStyle(
-                    letterSpacing: 2.0,
-                  ),
+                Text("• ${tempData["data"]["movie"]["year"]}"),
+                Text("• ${tempData["data"]["movie"]["language"]}".toUpperCase()),
+                if ((tempData["data"]["movie"]["runtime"]/60).toString().substring(0, 1)!="0") Text("• ${(tempData["data"]["movie"]["runtime"]/60).toString().substring(0, 1)}h ${tempData["data"]["movie"]["runtime"]%60}m"),
+                if ((tempData["data"]["movie"]["runtime"]/60).toString().substring(0, 1)=="0") Text("• ${tempData["data"]["movie"]["runtime"]} min"),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                if (tempData["data"]["movie"]["rating"]!=0) Text("• IMDB Rating: ${tempData["data"]["movie"]["rating"]}/10"),
+                if (tempData["data"]["movie"]["rating"]==0) Text("• IMDB Rating: N/A"),
+                if (tempData["data"]["movie"]["mpa_rating"]!="") Text("• MPA Rating: ${tempData["data"]["movie"]["mpa_rating"]}"),
+                if (tempData["data"]["movie"]["mpa_rating"]=="") Text("• MPA Rating: N/A"),
+              ],
+            ),
+            if (tempData["data"]["movie"]["genres"].length<=5) Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(tempData["data"]["movie"]["genres"].length, (index) => Text("• ${tempData["data"]["movie"]["genres"][index]}")),
+            ),
+            if (tempData["data"]["movie"]["genres"].length>5) Row(
+              children: [
+                SizedBox(
+                  width: width*0.95,
+                  child: Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: List.generate(5, (index) => Text("• ${tempData["data"]["movie"]["genres"][index]}")),),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: List.generate(tempData["data"]["movie"]["genres"].length-5, (index) => Text("• ${tempData["data"]["movie"]["genres"][5+index]}")),),
+                  ],),
                 )
               ],
             ),
-          );
-        });
-  }
-
-  Widget summaryHolder(String synopsis) {
-    return Container(
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Synopsis",
-            style: TextStyle(
-                fontSize: 20.0,
-                letterSpacing: 2.0,
-                fontWeight: FontWeight.w600),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
-          ),
-          Text(
-            synopsis,
-            style: TextStyle(fontSize: 17.0, color: Colors.white70),
-            textAlign: TextAlign.justify,
-          ),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text("• Downloads: ${tempData["data"]["movie"]["download_count"]}"),
+                Text("• Likes: ${tempData["data"]["movie"]["like_count"]}"),
+              ],
+            ),
+            if (showMagnet) Card(child: ListTile(
+              leading: const Text("Magnet URL:"),
+              title: Text(magnetUrl!),
+            ),),
+            Column(
+              children: List.generate(tempData["data"]["movie"]["torrents"].length, (index) {
+                if (tempData["data"]["movie"]["torrents"][index]["quality"]=="720p") return SizedBox(width: width, child: ElevatedButton.icon(onPressed: () => downloadAction(tempData["data"]["movie"]["torrents"][index]["hash"], tempData["data"]["movie"]["title_long"], torrentName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"])), icon: Icon(Icons.high_quality), label: Text(buttonName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"], tempData["data"]["movie"]["torrents"][index]["size"]))));
+                else if (tempData["data"]["movie"]["torrents"][index]["quality"]=="1080p") return SizedBox(width: width, child: ElevatedButton.icon(onPressed: () => downloadAction(tempData["data"]["movie"]["torrents"][index]["hash"], tempData["data"]["movie"]["title_long"], torrentName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"])), icon: Icon(Icons.hd), label: Text(buttonName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"], tempData["data"]["movie"]["torrents"][index]["size"]))));
+                else if (tempData["data"]["movie"]["torrents"][index]["quality"]=="2160p") return SizedBox(width: width, child: ElevatedButton.icon(onPressed: () => downloadAction(tempData["data"]["movie"]["torrents"][index]["hash"], tempData["data"]["movie"]["title_long"], torrentName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"])), icon: Icon(Icons.four_k), label: Text(buttonName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"], tempData["data"]["movie"]["torrents"][index]["size"]))));
+                else return SizedBox(width: width, child: ElevatedButton.icon(onPressed: () => downloadAction(tempData["data"]["movie"]["torrents"][index]["hash"], tempData["data"]["movie"]["title_long"], torrentName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"])), icon: Icon(Icons.threed_rotation), label: Text(buttonName(tempData["data"]["movie"]["torrents"][index]["quality"], tempData["data"]["movie"]["torrents"][index]["type"], tempData["data"]["movie"]["torrents"][index]["size"]))));
+              }),
+            ),
+            Text(tempData["data"]["movie"]["description_full"], textAlign: TextAlign.justify, overflow: TextOverflow.fade, softWrap: true,),
+            SizedBox(
+              width: width,
+              height: height / 3.3,
+              child: ListView.builder(
+                  itemCount: 3,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Image.network(
+                        getImageData(imageNameFixer(tempData["data"]["movie"]["slug"]), "medium-screenshot${index + 1}"),
+                        fit: BoxFit.cover,
+                        frameBuilder: (BuildContext context, Widget child, int? frame,
+                            bool? wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded!) {
+                            return child;
+                          }
+                          return AnimatedOpacity(
+                            child: child,
+                            opacity: frame == null ? 0 : 1,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeOut,
+                          );
+                        },
+                        errorBuilder:
+                            (BuildContext context, Object object, StackTrace? trace) {
+                          return Image.asset("images/logo-YTS.png",);
+                        },
+                      ),
+                    );
+                  }
+                  ),
+            ),
+            if (tempData["data"]["movie"]["cast"]!=null) Column(
+              children: List.generate(tempData["data"]["movie"]["cast"].length, (index) {
+                return Card(
+                  child: ListTile(
+                    leading: ClipRRect(borderRadius: BorderRadius.circular(4.0), child: Image.network(
+                      tempData["data"]["movie"]["cast"][index]["url_small_image"],
+                      fit: BoxFit.cover,
+                        frameBuilder: (BuildContext context, Widget child, int? frame,
+                            bool? wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded!) {
+                            return child;
+                          }
+                          return AnimatedOpacity(
+                            child: child,
+                            opacity: frame == null ? 0 : 1,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeOut,
+                          );
+                        },
+                        errorBuilder:
+                            (BuildContext context, Object object, StackTrace? trace) {
+                          return Icon(Icons.person, size: 56.0,);
+                        }
+                    )),
+                    title: Text(tempData["data"]["movie"]["cast"][index]["name"]),
+                    trailing: Text(tempData["data"]["movie"]["cast"][index]["character_name"]),
+                  ),);
+              }),
+            ),
+            FutureBuilder(
+              future: getJsonData(baseUrlMovieSuggestions, movieId: widget.movieId),
+              builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+                if (snapshot.hasData) {
+                  Map _tempData = snapshot.data!;
+                  return CarouselSlider(
+                      items: List.generate(2, (index) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Column(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: imageLoader(_tempData, index),
+                                    ),
+                                    onTap: () => shortDetail(context, _tempData["data"]["movies"][index], height),
+                                  ),
+                                ),
+                                Text(_tempData["data"]["movies"][index]["title"].length <= 12
+                                    ? _tempData["data"]["movies"][index]["title"]
+                                    : "${_tempData["data"]["movies"][index]["title"].substring(0, 12)}..."),
+                                Text("${_tempData["data"]["movies"][index]["year"]}")
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: imageLoader(_tempData, index+2),
+                                    ),
+                                    onTap: () => shortDetail(context, _tempData["data"]["movies"][index+2], height),
+                                  ),
+                                ),
+                                Text(_tempData["data"]["movies"][index+2]["title"].length <= 12
+                                    ? _tempData["data"]["movies"][index+2]["title"]
+                                    : "${_tempData["data"]["movies"][index+2]["title"].substring(0, 12)}..."),
+                                Text("${_tempData["data"]["movies"][index+2]["year"]}")
+                              ],
+                            )
+                          ],
+                        );
+                      }),
+                      options: CarouselOptions(
+                        height: height / 3.3,
+                        enlargeCenterPage: true,
+                        autoPlay: true,
+                        aspectRatio: 9 / 16,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enableInfiniteScroll: true,
+                        autoPlayAnimationDuration: Duration(milliseconds: 800),
+                        viewportFraction: 0.8,
+                      ));
+                }
+                return CircularProgressIndicator();
+              }
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget movieSuggestion(double _height, double _width) {
-    return FutureBuilder(
-        future: getJsonData(baseUrlMovieSuggestions, movieId: movieId),
-        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-          if (snapshot.hasData) {
-            Map _tempData = snapshot.data!;
-            return Container(
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Similar Movies",
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        letterSpacing: 2.0,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 3.0, bottom: 3.0),
-                  ),
-                  SizedBox(
-                    height: _height / 3.7,
-                    child: ListView.builder(
-                        physics: BouncingScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _tempData["data"]["movies"].length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            child: Container(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: _height / 5,
-                                    width: _width / 3,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 3.0, color: Colors.white),
-                                    ),
-                                    child: Image.network(
-                                      getImageData(
-                                          imageNameFixer(_tempData["data"]
-                                              ["movies"][index]["slug"]),
-                                          "medium-cover"),
-                                      fit: BoxFit.fill,
-                                      frameBuilder: (BuildContext context,
-                                          Widget child,
-                                          int? frame,
-                                          bool? wasSynchronouslyLoaded) {
-                                        if (wasSynchronouslyLoaded!) {
-                                          return child;
-                                        }
-                                        return AnimatedOpacity(
-                                          child: child,
-                                          opacity: frame == null ? 0 : 1,
-                                          duration: const Duration(seconds: 1),
-                                          curve: Curves.easeOut,
-                                        );
-                                      },
-                                      errorBuilder: (BuildContext context,
-                                          Object object, StackTrace? trace) {
-                                        return Container(
-                                          height: _height / 5,
-                                          width: _width / 3,
-                                          child: Center(
-                                            child: Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Image.asset(
-                                                  "images/logo-YTS.png",
-                                                  fit: BoxFit.fill,
-                                                )),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  Text(
-                                    _tempData["data"]["movies"][index]["title"]
-                                                .length <=
-                                            17
-                                        ? _tempData["data"]["movies"][index]
-                                            ["title"]
-                                        : "${_tempData["data"]["movies"][index]["title"].substring(0, 18)}...",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "${_tempData["data"]["movies"][index]["year"]}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.white70),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MovieDetailScreen(
-                                            movieId: _tempData["data"]["movies"]
-                                                [index]["id"],
-                                          )));
-                            },
-                          );
-                        }),
-                  ),
-                ],
-              ),
-            );
-          }
-          return Container(
-            margin: const EdgeInsets.all(15.0),
-            child: Column(
-              children: [
-                CupertinoActivityIndicator(
-                  radius: 25.0,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-                ),
-                Text(
-                  "Relax - Loading Similar Movies...",
-                  style: TextStyle(
-                    letterSpacing: 2.0,
-                  ),
-                )
-              ],
-            ),
-          );
-        });
+  Widget imageLoader(Map tempData, int index) {
+    return Image.network(
+      getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
+          "medium-cover"),
+      fit: BoxFit.cover,
+      frameBuilder: (BuildContext context, Widget child,
+          int? frame, bool? wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded!) {
+          return child;
+        }
+        return AnimatedOpacity(
+          child: child,
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      },
+      errorBuilder: (BuildContext context, Object object,
+          StackTrace? trace) {
+        return Center(
+          child: Image.asset(
+            "images/logo-YTS.png",
+            fit: BoxFit.cover,
+          ),
+        );
+      },
+    );
   }
 }
