@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<Map> getJsonData(String apiUrl,
@@ -53,6 +54,7 @@ Future<Map> getJsonData(String apiUrl,
   if (withCast != null) {
     apiUrl += "with_cast=$withCast&";
   }
+  apiUrl = apiUrl.substring(0, apiUrl.length-1);
   response = await http.get(Uri.parse(apiUrl));
   return json.decode("${response.body}");
 }

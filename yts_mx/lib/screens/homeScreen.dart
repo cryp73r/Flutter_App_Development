@@ -128,71 +128,94 @@ class HomeScreen extends StatelessWidget {
           page: 1,
           quality: "2160p",
           sortBy: "year",
-          limit: 10,
         ),
-      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
           if (snapshot.hasData) {
             Map tempData = snapshot.data!;
-            return Column(
-              children: [
-                CarouselSlider.builder(
-                    itemCount: tempData["data"]["movies"].length,
-                    itemBuilder: (BuildContext context, int index, int realIndex) {
-                      return InkWell(
-                        child: Stack(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(6.0),
-                              decoration: BoxDecoration(
+            return CarouselSlider(
+                items: List.generate(tempData["data"]["movies"].length~/2, (index) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
-                                image: DecorationImage(
-                                  image: NetworkImage(getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
-                                      "medium-cover")),
-                                  fit: BoxFit.cover,
-                                ),
+                                child: imageLoader(tempData, index),
                               ),
+                              onTap: () => shortDetail(context, tempData["data"]["movies"][index], height),
                             ),
-                            Positioned(
-                              bottom: 20.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: Container(
-                                width: 300.0,
-                                color: Colors.black54,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 5,
-                                  horizontal: 20,
-                                ),
-                                child: Text(tempData["data"]["movies"][index]["title_long"], style: const TextStyle(
-                                  fontSize: 26.0,
-                                  color: Colors.white,
-                                ),
-                                  softWrap: true,
-                                  overflow: TextOverflow.fade,
-                                ),
+                          ),
+                          Text(tempData["data"]["movies"][index]["title"].length <= 12
+                              ? tempData["data"]["movies"][index]["title"]
+                              : "${tempData["data"]["movies"][index]["title"].substring(0, 12)}..."),
+                          Text("${tempData["data"]["movies"][index]["year"]}")
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: imageLoader(tempData, index+10),
                               ),
-                            )
-                          ],
-                        ),
-                        onTap: () => shortDetail(context, tempData["data"]["movies"][index], height),
-                      );
-                    },
-                    options: CarouselOptions(
-                      height: height / 3.3,
-                      enlargeCenterPage: true,
-                      autoPlay: true,
-                      aspectRatio: 16 / 9,
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enableInfiniteScroll: true,
-                      autoPlayAnimationDuration: Duration(milliseconds: 800),
-                      viewportFraction: 0.8,
-                    ),
-                ),
-              ],
-      );
-    }
+                              onTap: () => shortDetail(context, tempData["data"]["movies"][index+10], height),
+                            ),
+                          ),
+                          Text(tempData["data"]["movies"][index+10]["title"].length <= 12
+                              ? tempData["data"]["movies"][index+10]["title"]
+                              : "${tempData["data"]["movies"][index+10]["title"].substring(0, 12)}..."),
+                          Text("${tempData["data"]["movies"][index+10]["year"]}")
+                        ],
+                      )
+                    ],
+                  );
+                }),
+                options: CarouselOptions(
+                  height: height / 3.3,
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  aspectRatio: 9 / 16,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  viewportFraction: 0.8,
+                ));
+          }
           return CircularProgressIndicator();
-      }
+        }
+    );
+  }
+
+  Widget imageLoader(Map tempData, int index) {
+    return Image.network(
+      getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
+          "medium-cover"),
+      fit: BoxFit.cover,
+      frameBuilder: (BuildContext context, Widget child,
+          int? frame, bool? wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded!) {
+          return child;
+        }
+        return AnimatedOpacity(
+          child: child,
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(seconds: 1),
+          curve: Curves.easeOut,
+        );
+      },
+      errorBuilder: (BuildContext context, Object object,
+          StackTrace? trace) {
+        return Center(
+          child: Image.asset(
+            "images/logo-YTS.png",
+            fit: BoxFit.cover,
+          ),
+        );
+      },
     );
   }
 }

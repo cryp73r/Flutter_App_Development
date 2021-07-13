@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:yts_mx/JsonData/getImageData.dart';
@@ -55,6 +56,7 @@ class _DisplayDataState extends State<DisplayData> {
 
   bool showMagnet=false;
   String? magnetUrl;
+  bool enableButton=true;
 
   void shortDetail(BuildContext context, Map temp, double height) {
     showModalBottomSheet(
@@ -92,6 +94,7 @@ class _DisplayDataState extends State<DisplayData> {
                     onPressed: () {
                       setState(() {
                         showMagnet=true;
+                        enableButton=true;
                       });
                       Navigator.of(context).pop();
                     },
@@ -262,6 +265,12 @@ class _DisplayDataState extends State<DisplayData> {
             if (showMagnet) Card(child: ListTile(
               leading: const Text("Magnet URL:"),
               title: Text(magnetUrl!),
+              trailing: TextButton(onPressed: enableButton?() {
+                Clipboard.setData(ClipboardData(text: magnetUrl!));
+                setState(() {
+                  enableButton=false;
+                });
+              }:null, child: Text(enableButton?"COPY":"COPIED")),
             ),),
             Column(
               children: List.generate(tempData["data"]["movie"]["torrents"].length, (index) {
@@ -310,7 +319,7 @@ class _DisplayDataState extends State<DisplayData> {
                 return Card(
                   child: ListTile(
                     leading: ClipRRect(borderRadius: BorderRadius.circular(4.0), child: Image.network(
-                      tempData["data"]["movie"]["cast"][index]["url_small_image"],
+                      (tempData["data"]["movie"]["cast"][index]["url_small_image"]!=null)?tempData["data"]["movie"]["cast"][index]["url_small_image"]:"https://google.com",
                       fit: BoxFit.cover,
                         frameBuilder: (BuildContext context, Widget child, int? frame,
                             bool? wasSynchronouslyLoaded) {
@@ -392,7 +401,7 @@ class _DisplayDataState extends State<DisplayData> {
                         viewportFraction: 0.8,
                       ));
                 }
-                return CircularProgressIndicator();
+                return SizedBox();
               }
             ),
           ],
