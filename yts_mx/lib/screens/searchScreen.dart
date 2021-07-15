@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
 import 'package:yts_mx/screens/movieDetailScreen.dart';
-import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -21,6 +19,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _searching = false;
   bool _displayWheel = true;
   ScrollController _scrollController = ScrollController();
+  final textController = TextEditingController();
 
   @override
   void initState() {
@@ -33,6 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("No more Movies related to search."),
+            duration: Duration(seconds: 2),
           ));
           setState(() {
             _displayWheel = false;
@@ -54,36 +54,44 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(actions: [
-        Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width - 80,
-            margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-              autofocus: true,
-              style: TextStyle(fontSize: 20.0, color: Colors.white70),
-              decoration: InputDecoration(
-                  hintText: "Be Precise, Like: Interstellar",
-                  hintStyle: TextStyle(color: Colors.white54),
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
-                  focusedBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none),
-              autocorrect: false,
-              textInputAction: TextInputAction.search,
-              onChanged: (String queryTerm) {
-                _query = queryTerm;
-                _pageNumber = 1;
-                _rawData.clear();
-                _searching = true;
-                if (queryTerm == "") {
-                  _searching = false;
-                }
-                if (_maxLimit <= 6) {
-                  _displayWheel = false;
-                }
-                setState(() {});
-              },
-            ),
+        Container(
+          width: MediaQuery.of(context).size.width - 80,
+          margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: textController,
+                  autofocus: true,
+                  style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                  decoration: InputDecoration(
+                      hintText: "Be Precise, Like: Interstellar",
+                      hintStyle: TextStyle(color: Colors.white54),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none),
+                  autocorrect: false,
+                  textInputAction: TextInputAction.search,
+                  onChanged: (String queryTerm) {
+                    _query = queryTerm;
+                    _pageNumber = 1;
+                    _rawData.clear();
+                    _searching = true;
+                    if (queryTerm == "") {
+                      _searching = false;
+                    }
+                    if (_maxLimit <= 6) {
+                      _displayWheel = false;
+                    }
+                    setState(() {});
+                  },
+                ),
+              ),
+              IconButton(onPressed: () {
+                textController.clear();
+              }, icon: Icon(Icons.clear)),
+            ],
           ),
         ),
       ]),
@@ -172,6 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
               }
               return successResult(context);
             }
+            return Center(child: Text("No Result Found!", style: Theme.of(context).textTheme.bodyText1,),);
           }
           return Center(
             child: Container(
@@ -196,102 +205,77 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget successResult(BuildContext context) {
-    double _height = MediaQuery.of(context).size.height;
-    double _width = MediaQuery.of(context).size.width;
-    return Container(
-      child: Scrollbar(
-        radius: Radius.circular(20.0),
-        child: Container(
-          margin: const EdgeInsets.all(8.0),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2),
-            itemCount: _rawData.length + 1,
-            physics: BouncingScrollPhysics(),
-            controller: _scrollController,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == _rawData.length) {
-                return _displayWheel
-                    ? CupertinoActivityIndicator(
-                        radius: 20.0,
-                      )
-                    : Text("");
-              }
-              return GestureDetector(
-                child: Container(
-                  margin: EdgeInsets.only(left: 0.02 * _width, top: 0.005 * _height, right: 0.02 * _width),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: (_height ~/ 5).toInt(),
-                        child: Container(
-                          height: _height / 5,
-                          width: _width / 3,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 3.0, color: Colors.white),
-                          ),
-                          child: Image.network(
-                            getImageData(imageNameFixer(_rawData[index]["slug"]),
-                                "medium-cover"),
-                            fit: BoxFit.fill,
-                            frameBuilder: (BuildContext context, Widget child,
-                                int? frame, bool? wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded!) {
-                                return child;
-                              }
-                              return AnimatedOpacity(
-                                child: child,
-                                opacity: frame == null ? 0 : 1,
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeOut,
-                              );
-                            },
-                            errorBuilder: (BuildContext context, Object object,
-                                StackTrace? trace) {
-                              return Container(
-                                height: _height / 5,
-                                width: _width / 3,
-                                child: Center(
-                                  child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.photo,
-                                        size: 60.0,
-                                        color: Colors.white70,
-                                      )),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+    return Scrollbar(
+      radius: Radius.circular(20.0),
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            mainAxisSpacing: MediaQuery.of(context).size.height*0.03,
+          ),
+          itemCount: _rawData.length + 1,
+          controller: _scrollController,
+          itemBuilder: (BuildContext context, int index) {
+            if (index == _rawData.length) {
+              return _displayWheel
+                  ? CupertinoActivityIndicator(
+                      radius: 20.0,
+                    )
+                  : Text("");
+            }
+            return Column(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        _rawData[index]["medium_cover_image"],
+                        fit: BoxFit.cover,
+                        frameBuilder: (BuildContext context, Widget child,
+                            int? frame, bool? wasSynchronouslyLoaded) {
+                          if (wasSynchronouslyLoaded!) {
+                            return child;
+                          }
+                          return AnimatedOpacity(
+                            child: child,
+                            opacity: frame == null ? 0 : 1,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeOut,
+                          );
+                        },
+                        errorBuilder: (BuildContext context, Object object,
+                            StackTrace? trace) {
+                          return Center(
+                            child: Image.asset(
+                              "images/logo-YTS.png",
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
                       ),
-                      Text(
-                        _rawData[index]["title"].length <= 15
-                            ? _rawData[index]["title"]
-                            : "${_rawData[index]["title"].substring(0, 15)}...",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${_rawData[index]["year"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white70),
-                      ),
-                    ],
+                    ),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MovieDetailScreen(
+                              movieId: _rawData[index]["id"],
+                              ytTrailerCode: _rawData[index]["yt_trailer_code"],
+                            ))),
                   ),
                 ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MovieDetailScreen(
-                                movieId: _rawData[index]["id"],
-                              )));
-                },
-              );
-            },
-          ),
+                Text(
+                  _rawData[index]["title"].length <= 12
+                      ? _rawData[index]["title"]
+                      : "${_rawData[index]["title"].substring(0, 12)}...",
+                ),
+                Text(
+                  "${_rawData[index]["year"]}",
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

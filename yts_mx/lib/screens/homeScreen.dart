@@ -1,9 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
+import 'package:yts_mx/screens/more_movies_screen.dart';
 import 'package:yts_mx/screens/short_detail_screen.dart';
-import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,9 +17,14 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void moreButtonAction(BuildContext context, String title, String sortBy) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => MoreMoviesScreen(title: title, sortBy: sortBy)));
+  }
+
   @override
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
+    final ThemeData themeData = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8.0),
@@ -28,26 +32,26 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             carouselHolder(_height),
-            movieHolder(context, _height, "Latest Movies", "year"),
-            movieHolder(context, _height, "Trending Now", "date_added"),
-            movieHolder(context, _height, "Highly Rated", "rating"),
-            movieHolder(context, _height, "Most Downloaded", "download_count"),
-            movieHolder(context, _height, "Most Liked", "like_count"),
+            movieHolder(context, _height, "Latest Movies", "year", themeData),
+            movieHolder(context, _height, "Trending Now", "date_added", themeData),
+            movieHolder(context, _height, "Highly Rated", "rating", themeData),
+            movieHolder(context, _height, "Most Downloaded", "download_count", themeData),
+            movieHolder(context, _height, "Most Liked", "like_count", themeData),
           ],
         ),
       ),
     );
   }
 
-  Widget movieHolder(BuildContext context, double height, String title, String sortBy) {
+  Widget movieHolder(BuildContext context, double height, String title, String sortBy, ThemeData themeData) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(5.0),
           child: Row(
             children: [
-              Expanded(child: Text(title)),
-              TextButton(onPressed: () {}, child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text("More"), Icon(Icons.keyboard_arrow_right)],)),
+              Expanded(child: Text(title, style: themeData.textTheme.bodyText1,)),
+              TextButton(onPressed: () => moreButtonAction(context, title, sortBy), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: const [Text("More"), Icon(Icons.keyboard_arrow_right)],)),
             ],
           ),
         ),
@@ -75,8 +79,7 @@ class HomeScreen extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: Image.network(
-                                        getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
-                                            "medium-cover"),
+                                        tempData["data"]["movies"][index]["medium_cover_image"],
                                         fit: BoxFit.cover,
                                         frameBuilder: (BuildContext context, Widget child,
                                             int? frame, bool? wasSynchronouslyLoaded) {
@@ -192,8 +195,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget imageLoader(Map tempData, int index) {
     return Image.network(
-      getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
-          "medium-cover"),
+      tempData["data"]["movies"][index]["medium_cover_image"],
       fit: BoxFit.cover,
       frameBuilder: (BuildContext context, Widget child,
           int? frame, bool? wasSynchronouslyLoaded) {

@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/JsonData/getJsonData.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
 import 'package:yts_mx/screens/short_detail_screen.dart';
-import 'package:yts_mx/utils/imageNameFixer.dart';
 import 'package:yts_mx/utils/magnetLinkGenerator.dart';
 import 'package:yts_mx/utils/utils.dart';
 
 class MovieDetailScreen extends StatelessWidget {
   final int? movieId;
+  final String? ytTrailerCode;
 
-  const MovieDetailScreen({Key? key, @required this.movieId}) : super(key: key);
+  const MovieDetailScreen({Key? key, @required this.movieId, @required this.ytTrailerCode}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,7 @@ class MovieDetailScreen extends StatelessWidget {
           searchButton(context),
         ],
       ),
-      body: DisplayData(movieId: movieId),
+      body: DisplayData(movieId: movieId, ytTrailerCode: ytTrailerCode,),
       drawer: appDrawer(context),
     );
   }
@@ -45,8 +44,9 @@ class MovieDetailScreen extends StatelessWidget {
 
 class DisplayData extends StatefulWidget {
   final int? movieId;
+  final String? ytTrailerCode;
 
-  const DisplayData({Key? key, @required this.movieId}) : super(key: key);
+  const DisplayData({Key? key, @required this.movieId, @required this.ytTrailerCode}) : super(key: key);
 
   @override
   State<DisplayData> createState() => _DisplayDataState();
@@ -57,6 +57,24 @@ class _DisplayDataState extends State<DisplayData> {
   bool showMagnet=false;
   String? magnetUrl;
   bool enableButton=true;
+  late YoutubePlayerController _ytController;
+  bool muted = true;
+
+  @override
+  void initState() {
+    _ytController = YoutubePlayerController(
+      initialVideoId: widget.ytTrailerCode!,
+      flags: YoutubePlayerFlags(
+        hideControls: false,
+        controlsVisibleAtStart: true,
+        autoPlay: true,
+        mute: true,
+        loop: true,
+        useHybridComposition: false,
+      ),
+    );
+    super.initState();
+  }
 
   void shortDetail(BuildContext context, Map temp, double height) {
     showModalBottomSheet(
@@ -160,8 +178,7 @@ class _DisplayDataState extends State<DisplayData> {
         height: _height,
         width: _width,
         child: Image.network(
-          getImageData(
-              imageNameFixer(rawData["data"]["movie"]["slug"]), "background"),
+          rawData["data"]["movie"]["background_image"],
           fit: BoxFit.fill,
           color: Colors.black87,
           colorBlendMode: BlendMode.darken,
@@ -198,18 +215,22 @@ class _DisplayDataState extends State<DisplayData> {
 
   Widget ytTrailerHolder(Map tempData) {
     return YoutubePlayer(
-      controller: YoutubePlayerController(
-        initialVideoId: tempData["data"]["movie"]["yt_trailer_code"],
-        flags: YoutubePlayerFlags(
-          hideControls: false,
-          controlsVisibleAtStart: true,
-          autoPlay: false,
-          mute: false,
-          useHybridComposition: false,
-        ),
-      ),
+      controller: _ytController,
       showVideoProgressIndicator: true,
-      progressIndicatorColor: Colors.red,
+      bottomActions: [
+        if (muted) IconButton(onPressed: () {
+          _ytController.unMute();
+          muted = false;
+          setState(() {});
+        }, icon: Icon(Icons.volume_off))
+        else IconButton(
+            onPressed: () {
+              _ytController.mute();
+              muted = true;
+              setState(() {});
+              },
+            icon: Icon(Icons.volume_up))
+      ],
     );
   }
 
@@ -221,7 +242,7 @@ class _DisplayDataState extends State<DisplayData> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(tempData["data"]["movie"]["title"], textAlign: TextAlign.justify, softWrap: true, overflow: TextOverflow.fade,),
+            Text(tempData["data"]["movie"]["title"], style: Theme.of(context).textTheme.headline1, textAlign: TextAlign.justify, softWrap: true, overflow: TextOverflow.fade,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -291,7 +312,7 @@ class _DisplayDataState extends State<DisplayData> {
                     return Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Image.network(
-                        getImageData(imageNameFixer(tempData["data"]["movie"]["slug"]), "medium-screenshot${index + 1}"),
+                        tempData["data"]["movie"]["medium_screenshot_image${index+1}"],
                         fit: BoxFit.cover,
                         frameBuilder: (BuildContext context, Widget child, int? frame,
                             bool? wasSynchronouslyLoaded) {
@@ -343,6 +364,7 @@ class _DisplayDataState extends State<DisplayData> {
                   ),);
               }),
             ),
+            SizedBox(height: 10.0,),
             FutureBuilder(
               future: getJsonData(baseUrlMovieSuggestions, movieId: widget.movieId),
               builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
@@ -412,8 +434,7 @@ class _DisplayDataState extends State<DisplayData> {
 
   Widget imageLoader(Map tempData, int index) {
     return Image.network(
-      getImageData(imageNameFixer(tempData["data"]["movies"][index]["slug"]),
-          "medium-cover"),
+      tempData["data"]["movies"][index]["medium_cover_image"],
       fit: BoxFit.cover,
       frameBuilder: (BuildContext context, Widget child,
           int? frame, bool? wasSynchronouslyLoaded) {

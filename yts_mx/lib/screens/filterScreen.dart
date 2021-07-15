@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:yts_mx/screens/home.dart';
+import 'package:yts_mx/screens/more_movies_screen.dart';
 
 class FilterScreen extends StatefulWidget {
+  final String? title;
   final String? quality;
   final int? minimumRating;
   final String? genre;
@@ -10,11 +11,12 @@ class FilterScreen extends StatefulWidget {
 
   const FilterScreen(
       {Key? key,
-      this.quality,
-      this.minimumRating,
-      this.genre,
-      this.sortBy,
-      this.orderBy})
+        this.title,
+        this.quality,
+        this.minimumRating,
+        this.genre,
+        this.sortBy,
+        this.orderBy})
       : super(key: key);
 
   @override
@@ -189,17 +191,18 @@ class _FilterScreenState extends State<FilterScreen> {
               style: TextStyle(fontSize: 16.0),
             ),
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
+              Navigator.of(context).pop();
+              Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Home(
-                            quality: quality,
-                            minimumRating: minimumRating,
-                            genre: genre,
-                            sortBy: sortBy,
-                            orderBy: orderBy,
-                          )),
-                  (route) => false);
+                      builder: (context) => MoreMoviesScreen(
+                        title: widget.title!,
+                        quality: quality,
+                        minimumRating: minimumRating,
+                        genre: genre,
+                        sortBy: sortBy,
+                        orderBy: orderBy,
+                      )),);
             },
           ),
         ],

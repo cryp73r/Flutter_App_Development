@@ -1,50 +1,40 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:yts_mx/pages/latest_movies_page.dart';
 import 'package:yts_mx/screens/appDrawer.dart';
-import 'package:yts_mx/screens/filterScreen.dart';
 import 'package:yts_mx/screens/homeScreen.dart';
 
 class Home extends StatefulWidget {
-  final String? quality;
-  final int? minimumRating;
-  final String? genre;
-  final String? sortBy;
-  final String? orderBy;
-
-  const Home(
-      {Key? key,
-      this.quality,
-      this.minimumRating,
-      this.genre,
-      this.sortBy,
-      this.orderBy})
-      : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  bool showHome = true;
 
-  String? quality;
-  int? minimumRating;
-  String? genre;
-  String? sortBy;
-  String? orderBy;
+  _getConnection() async {
+    try {
+      final checkConnectivity = await InternetAddress.lookup("google.com");
+      if (checkConnectivity.isNotEmpty && checkConnectivity[0].rawAddress.isNotEmpty) {
+        showHome = true;
+      }
+    }
+    on SocketException catch (_) {
+      showHome = false;
+    }
+
+  }
 
   @override
   void initState() {
+    _getConnection();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    quality = widget.quality == null ? "All" : widget.quality;
-    minimumRating = widget.minimumRating == null ? 0 : widget.minimumRating;
-    genre = widget.genre == null ? "All" : widget.genre;
-    sortBy = widget.sortBy == null ? "year" : widget.sortBy;
-    orderBy = widget.orderBy == null ? "desc" : widget.orderBy;
-
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
@@ -52,32 +42,19 @@ class _HomeState extends State<Home> {
         ),
         actions: [
           searchButton(context),
-          filterButton(context),
         ],
       ),
-      body: HomeScreen(),
-      // LatestMoviesPage(
-      //         quality: widget.quality,
-      //         minimumRating: widget.minimumRating,
-      //         genre: widget.genre,
-      //         sortBy: widget.sortBy == null ? "year" : widget.sortBy,
-      //         orderBy: widget.orderBy),
+      body: showHome?HomeScreen():Center(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        Text("No Internet Connection. Please Check Connection & Try Again!"),
+        TextButton(onPressed: () => Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false),
+          child: Text("Retry"),
+          style: TextButton.styleFrom(side: BorderSide(color: Colors.green, width: 1.5),
+          ),
+        ),
+      ],),),
       drawer: appDrawer(context),
-    );
-  }
-
-  void filterScreen(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (_) {
-          return FilterScreen(
-            quality: quality!,
-            minimumRating: minimumRating!,
-            genre: genre!,
-            sortBy: sortBy!,
-            orderBy: orderBy!,
-          );
-        }
     );
   }
 
@@ -91,17 +68,6 @@ class _HomeState extends State<Home> {
       onPressed: () {
         Navigator.pushNamed(context, "/searchScreen");
       },
-    );
-  }
-
-  IconButton filterButton(BuildContext context) {
-    return IconButton(
-      tooltip: "Filter",
-      icon: const Icon(
-        Icons.filter_alt,
-        size: 30.0,
-      ),
-      onPressed: () => filterScreen(context),
     );
   }
 }

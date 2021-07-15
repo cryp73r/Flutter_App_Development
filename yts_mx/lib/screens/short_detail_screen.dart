@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yts_mx/JsonData/getImageData.dart';
 import 'package:yts_mx/screens/movieDetailScreen.dart';
-import 'package:yts_mx/utils/imageNameFixer.dart';
 
 class ShortDetailScreen extends StatefulWidget {
   final Map? tempData;
@@ -41,8 +39,27 @@ class _ShortDetailScreenState extends State<ShortDetailScreen> {
         Expanded(child: ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Image.network(
-            getImageData(imageNameFixer(tempData["slug"]), "medium-cover"),
+            tempData["medium_cover_image"],
             fit: BoxFit.cover,
+            frameBuilder: (BuildContext context, Widget child,
+                int? frame, bool? wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded!) {
+                return child;
+              }
+              return AnimatedOpacity(
+                child: child,
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeOut,
+              );
+            },
+            errorBuilder: (BuildContext context, Object object,
+                StackTrace? trace) {
+              return Image.asset(
+                "images/logo-YTS.png",
+                fit: BoxFit.cover,
+              );
+            },
           ),
         )),
         Container(
@@ -52,12 +69,12 @@ class _ShortDetailScreenState extends State<ShortDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tempData["title"]),
+              Text(tempData["title"], style: Theme.of(context).textTheme.headline1,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text("• ${tempData["year"]}"),
-                  Text("• ${tempData["language"]}".toUpperCase()),
+                  Text(tempData["language"]!=""?"• ${tempData["language"]}".toUpperCase():"N/A"),
                   if ((tempData["runtime"]/60).toString().substring(0, 1)!="0") Text("• ${(tempData["runtime"]/60).toString().substring(0, 1)}h ${tempData["runtime"]%60}m"),
                   if ((tempData["runtime"]/60).toString().substring(0, 1)=="0") Text("• ${tempData["runtime"]} min"),
                 ],
@@ -71,8 +88,8 @@ class _ShortDetailScreenState extends State<ShortDetailScreen> {
                   if (tempData["mpa_rating"]=="") Text("• MPA Rating: N/A"),
                 ],
               ),
-              if (tempData["summary"].isNotEmpty && tempData["summary"].length>327) Text("${tempData["summary"].substring(0, 325)} ...", softWrap: true, overflow: TextOverflow.fade, textAlign: TextAlign.justify,),
-              if (tempData["summary"].isNotEmpty && tempData["summary"].length<327) Text("${tempData["summary"]}", softWrap: true, overflow: TextOverflow.fade, textAlign: TextAlign.justify,),
+              if (tempData["summary"].isNotEmpty && tempData["summary"].length>265) Text("${tempData["summary"].substring(0, 262)} ...", softWrap: true, overflow: TextOverflow.fade, textAlign: TextAlign.justify,),
+              if (tempData["summary"].isNotEmpty && tempData["summary"].length<265) Text("${tempData["summary"]}", softWrap: true, overflow: TextOverflow.fade, textAlign: TextAlign.justify,),
               if (tempData["summary"].isEmpty) Text("No Summary Available!", softWrap: true, overflow: TextOverflow.fade, textAlign: TextAlign.justify,)
             ],
           ),
@@ -106,11 +123,13 @@ class _ShortDetailScreenState extends State<ShortDetailScreen> {
         title: Text("View Full Description & Download"),
         trailing: Icon(Icons.arrow_forward_ios),
         onTap: () {
+          Navigator.of(context).pop();
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => MovieDetailScreen(
                     movieId: tempData["id"],
+                    ytTrailerCode: tempData["yt_trailer_code"],
                   )));
         },
       ),

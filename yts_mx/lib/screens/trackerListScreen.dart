@@ -45,7 +45,6 @@ class TrackerListScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       margin: const EdgeInsets.all(15.0),
                       child: SingleChildScrollView(
-                          physics: BouncingScrollPhysics(),
                           child: Text("${snapshot.data}")),
                     ),
                   ),

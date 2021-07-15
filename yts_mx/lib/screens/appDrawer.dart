@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Drawer appDrawer(BuildContext context) {
+  final ThemeData themeData = Theme.of(context);
   return Drawer(
     child: ListView(
       padding: const EdgeInsets.all(0.0),
@@ -25,12 +26,7 @@ Drawer appDrawer(BuildContext context) {
               ),
               Text(
                 "Crafted with ❤ by CRYP73R",
-                style: TextStyle(
-                  // fontStyle: FontStyle.italic,
-                  fontSize: 17.0,
-                  letterSpacing: 1.0,
-                  fontStyle: FontStyle.italic,
-                ),
+                style: themeData.textTheme.headline2,
               ),
             ],
           ),
@@ -40,7 +36,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.home_outlined,
             color: Colors.pink,
           ),
-          title: Text("HOME"),
+          title: Text("HOME", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamedAndRemoveUntil(
@@ -52,7 +48,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.notifications_active_outlined,
             color: Colors.red,
           ),
-          title: Text("ANNOUNCEMENTS"),
+          title: Text("ANNOUNCEMENTS", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, "/announcementScreen");
@@ -63,7 +59,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.workspaces_outline,
             color: Colors.deepOrangeAccent,
           ),
-          title: Text("HOW TO DOWNLOAD"),
+          title: Text("HOW TO DOWNLOAD", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, "/howToDownloadScreen");
@@ -74,7 +70,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.link,
             color: Colors.deepPurpleAccent,
           ),
-          title: Text("TRACKERS LIST"),
+          title: Text("TRACKERS LIST", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, "/trackerListScreen");
@@ -85,7 +81,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.bug_report_outlined,
             color: Colors.yellow,
           ),
-          title: Text("REPORT A PROBLEM"),
+          title: Text("REPORT A PROBLEM", style: themeData.textTheme.headline3,),
           onTap: () async {
             final String _formUrl =
                 "https://docs.google.com/forms/d/e/1FAIpQLSdFwATdFCd2N-4hO_omPInGzxCWh13m8Px8o01xF4Q3TreaqA/viewform?usp=sf_link";
@@ -100,7 +96,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.system_update,
             color: Colors.green,
           ),
-          title: Text("CHECK FOR UPDATES"),
+          title: Text("CHECK FOR UPDATES", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, "/updateAppScreen");
@@ -111,7 +107,7 @@ Drawer appDrawer(BuildContext context) {
             Icons.info_outline,
             color: Colors.blue,
           ),
-          title: Text("ABOUT US"),
+          title: Text("ABOUT US", style: themeData.textTheme.headline3,),
           onTap: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, "/aboutUsScreen");

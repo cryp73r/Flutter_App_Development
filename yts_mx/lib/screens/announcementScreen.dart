@@ -81,7 +81,6 @@ class AnnouncementScreen extends StatelessWidget {
                   children: [
                     Flexible(
                         child: ListView.builder(
-                            physics: BouncingScrollPhysics(),
                             padding: const EdgeInsets.all(8.0),
                             reverse: false,
                             itemCount: rawData["data"].length,

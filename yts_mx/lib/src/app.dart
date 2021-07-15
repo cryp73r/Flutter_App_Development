@@ -38,7 +38,6 @@ class App extends StatelessWidget {
 
   ThemeData darkThemeData(BuildContext context) {
     return ThemeData(
-      //0xFF6AC045
       brightness: Brightness.dark,
       primarySwatch: Colors.green,
       colorScheme: ColorScheme.fromSwatch(
@@ -61,6 +60,38 @@ class App extends StatelessWidget {
       buttonTheme: Theme.of(context).buttonTheme.copyWith(
             colorScheme: ColorScheme.dark(),
           ),
+        fontFamily: 'RobotoCondensed',
+        textTheme: ThemeData.dark().textTheme.copyWith(
+            bodyText1: const TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 0.9),
+              fontSize: 16.0,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold,
+            ),
+            bodyText2: const TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 0.8),
+              fontSize: 15.0,
+            ),
+            headline1: const TextStyle(
+              fontSize: 25.0,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+            ),
+          headline2: const TextStyle(
+              fontSize: 17.0,
+              letterSpacing: 1.0,
+              fontStyle: FontStyle.italic,
+              fontFamily: 'RobotoCondensed',
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+          ),
+          headline3: const TextStyle(
+              fontSize: 17.0,
+              fontFamily: 'RobotoCondensed',
+              color: Color.fromRGBO(255, 255, 255, 0.9)
+          ),
+        )
     );
   }
 }
