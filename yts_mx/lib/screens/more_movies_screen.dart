@@ -31,7 +31,7 @@ class _MoreMoviesScreenState extends State<MoreMoviesScreen> {
   List _rawData = [];
   int _pageNumber = 1;
   int? _maxLimit;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   String? quality;
   int? minimumRating;

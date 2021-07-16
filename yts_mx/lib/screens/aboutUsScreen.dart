@@ -44,7 +44,7 @@ class AboutUsScreen extends StatelessWidget {
             style: importantBody(),
           ),
           Text(
-            "We respect Privacy of our User, so neither we collect any information from user nor we ask for any extra permission from User. Even search history are not stored anywhere, not even locally on device.\n",
+            "We respect Privacy of our User, so neither we collect any information from user nor we ask for any extra permission from User. Even search histories are neither made nor stored anywhere, not even locally on device.\n",
             textAlign: TextAlign.justify,
             style: normalBody(),
           ),
@@ -54,7 +54,12 @@ class AboutUsScreen extends StatelessWidget {
             style: normalBody(),
           ),
           Text(
-            "Talking about your IP Address, yts.mx will never get to know about it. Thanks to our backend server, who requests for data on your behalf hence your IP is also 🔐 (Secured).\n",
+            "Talking about your IP Address, yts.mx will never get to know about it. Thanks to Mirror servers, who requests for data on your behalf hence your IP is also 🔐 (Secured).\n",
+            textAlign: TextAlign.justify,
+            style: normalBody(),
+          ),
+          Text(
+            "Magnet URLs are made inside app. They are not copied or downloaded from YTS.MX\n",
             textAlign: TextAlign.justify,
             style: normalBody(),
           ),
