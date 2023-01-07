@@ -39,7 +39,7 @@ class AboutUsScreen extends StatelessWidget {
             style: normalBody(),
           ),
           Text(
-            "Note: It is not an Official App by `yts.mx`. The app just uses yts.mx api at backend to get data, Officially provided by them.\n",
+            "Note: It is not an Official App by YTS.MX. The app doesn't directly calls YTS.MX API, just uses YTS.MX API at backend to get data, Officially provided by them.\n",
             textAlign: TextAlign.justify,
             style: importantBody(),
           ),
@@ -54,7 +54,7 @@ class AboutUsScreen extends StatelessWidget {
             style: normalBody(),
           ),
           Text(
-            "Talking about your IP Address, yts.mx will never get to know about it. Thanks to Mirror servers, who requests for data on your behalf hence your IP is also 🔐 (Secured).\n",
+            "Talking about your IP Address, yts.mx will never get to know about it. Thanks to our web-server, which requests for data on your behalf hence your IP is also 🔐 (Secured).\n",
             textAlign: TextAlign.justify,
             style: normalBody(),
           ),

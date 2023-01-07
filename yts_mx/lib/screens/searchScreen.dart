@@ -231,7 +231,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
-                        _rawData[index]["medium_cover_image"],
+                        baseUrlImageData+_rawData[index]["medium_cover_image"],
                         fit: BoxFit.cover,
                         frameBuilder: (BuildContext context, Widget child,
                             int? frame, bool? wasSynchronouslyLoaded) {

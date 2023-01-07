@@ -54,7 +54,6 @@ Future<Map> getJsonData(String apiUrl,
     apiUrl += "with_cast=$withCast&";
   }
   apiUrl = apiUrl.substring(0, apiUrl.length-1);
-  print(apiUrl);
   response = await http.get(Uri.parse(apiUrl));
   return json.decode("${response.body}");
 }

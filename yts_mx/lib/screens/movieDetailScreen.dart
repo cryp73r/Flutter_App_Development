@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -185,7 +184,7 @@ class _DisplayDataState extends State<DisplayData> {
         height: _height,
         width: _width,
         child: Image.network(
-          rawData["data"]["movie"]["background_image"],
+          baseUrlImageData+rawData["data"]["movie"]["background_image"],
           fit: BoxFit.fill,
           color: Colors.black87,
           colorBlendMode: BlendMode.darken,
@@ -319,7 +318,7 @@ class _DisplayDataState extends State<DisplayData> {
                   return Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Image.network(
-                      tempData["data"]["movie"]["medium_screenshot_image${index+1}"],
+                      baseUrlImageData+tempData["data"]["movie"]["medium_screenshot_image${index+1}"],
                       fit: BoxFit.cover,
                       frameBuilder: (BuildContext context, Widget child, int? frame,
                           bool? wasSynchronouslyLoaded) {
@@ -347,7 +346,7 @@ class _DisplayDataState extends State<DisplayData> {
               return Card(
                 child: ListTile(
                   leading: ClipRRect(borderRadius: BorderRadius.circular(4.0), child: Image.network(
-                    (tempData["data"]["movie"]["cast"][index]["url_small_image"]!=null)?tempData["data"]["movie"]["cast"][index]["url_small_image"]:"https://google.com",
+                      baseUrlImageData+((tempData["data"]["movie"]["cast"][index]["url_small_image"]!=null)?tempData["data"]["movie"]["cast"][index]["url_small_image"]:"https://google.com"),
                     fit: BoxFit.cover,
                       frameBuilder: (BuildContext context, Widget child, int? frame,
                           bool? wasSynchronouslyLoaded) {
@@ -440,7 +439,7 @@ class _DisplayDataState extends State<DisplayData> {
 
   Widget imageLoader(Map tempData, int index) {
     return Image.network(
-      tempData["data"]["movies"][index]["medium_cover_image"],
+      baseUrlImageData+tempData["data"]["movies"][index]["medium_cover_image"],
       fit: BoxFit.cover,
       frameBuilder: (BuildContext context, Widget child,
           int? frame, bool? wasSynchronouslyLoaded) {

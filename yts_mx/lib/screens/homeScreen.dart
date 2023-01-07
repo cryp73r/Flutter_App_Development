@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: Image.network(
-                                        tempData["data"]["movies"][index]["medium_cover_image"],
+                                        baseUrlImageData+tempData["data"]["movies"][index]["medium_cover_image"],
                                         fit: BoxFit.cover,
                                         frameBuilder: (BuildContext context, Widget child,
                                             int? frame, bool? wasSynchronouslyLoaded) {
@@ -195,7 +195,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget imageLoader(Map tempData, int index) {
     return Image.network(
-      tempData["data"]["movies"][index]["medium_cover_image"],
+      baseUrlImageData+tempData["data"]["movies"][index]["medium_cover_image"],
       fit: BoxFit.cover,
       frameBuilder: (BuildContext context, Widget child,
           int? frame, bool? wasSynchronouslyLoaded) {

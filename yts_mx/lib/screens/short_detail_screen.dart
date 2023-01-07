@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:yts_mx/screens/movieDetailScreen.dart';
 
+import '../utils/utils.dart';
+
 class ShortDetailScreen extends StatefulWidget {
   final Map? tempData;
   final double? height;
@@ -39,7 +41,7 @@ class _ShortDetailScreenState extends State<ShortDetailScreen> {
         Expanded(child: ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Image.network(
-            tempData["medium_cover_image"],
+            baseUrlImageData+tempData["medium_cover_image"],
             fit: BoxFit.cover,
             frameBuilder: (BuildContext context, Widget child,
                 int? frame, bool? wasSynchronouslyLoaded) {
